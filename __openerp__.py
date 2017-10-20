@@ -15,6 +15,7 @@
 	'data': [
 		'menu/tbvip_point_payroll_menu.xml',
 		'views/tbvip_point_payroll.xml',
+		'data/tbvip_point_payroll_data.xml',
 	],
 	'demo': [
 	],
