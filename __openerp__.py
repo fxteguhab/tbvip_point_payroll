@@ -9,11 +9,12 @@
 	'maintainer': 'Christyan Juniady and Associates',
 	'website': 'http://www.chjs.biz',
 	'depends': [
-		"base", "hr_point_payroll"
+		"base", "fleet", "hr_point_payroll"
 	],
 	'sequence': 150,
 	'data': [
 		'menu/tbvip_point_payroll_menu.xml',
+		'views/fleet_view.xml',
 		'views/tbvip_point_payroll.xml',
 		'data/tbvip_point_payroll_data.xml',
 	],

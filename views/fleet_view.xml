@@ -1,0 +1,17 @@
+<openerp>
+	<data>
+
+		<record model="ir.ui.view" id="fleet_vehicle_form_inherit">
+			<field name="name">fleet.vehicle.form.inherit</field>
+			<field name="model">fleet.vehicle</field>
+			<field name="inherit_id" ref="fleet.fleet_vehicle_form"/>
+			<field name="arch" type="xml">
+				<field name="vin_sn" position="after">
+					<field name="vehicle_type"/>
+					<field name="is_self_own"/>
+				</field>
+			</field>
+		</record>
+
+	</data>
+</openerp>
