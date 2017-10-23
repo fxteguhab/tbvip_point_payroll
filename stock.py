@@ -17,13 +17,13 @@ class stock_inventory(osv.osv):
 			for line in inventory.line_ids:
 				row_qty += line.product_qty
 			employee_point_obj.input_point(cr, uid,
-			activity_code='SO',
-			roles={
-				'ADM': uid,
-				'EMP': inventory.employee_id.id,
-			},
-			required_parameters={
-				'ROW_QTY': row_qty
-			},
-			context=context)
+				activity_code='SO',
+				roles={
+					'ADM': uid,
+					'EMP': inventory.employee_id.id,
+				},
+				required_parameters={
+					'ROW_QTY': row_qty
+				},
+				context=context)
 		return result
