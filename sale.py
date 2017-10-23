@@ -20,8 +20,8 @@ class sale_order(osv.osv):
 			employee_point_obj.input_point(cr, uid,
 				activity_code='SALES',
 				roles={
-					'ADM': uid,
-					'EMP': sale.employee_id.id,
+					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
+					'EMP': [sale.employee_id.id],
 				},
 				required_parameters={
 					'BON_VALUE': value,
@@ -30,19 +30,15 @@ class sale_order(osv.osv):
 				},
 				context=context)
 			# sales draft creator
-			employee_ids = employee_obj.search(cr, uid, [
-				('user_id', '=', sale.create_uid.id),
-			], limit=1, context=context)
-			if employee_ids and len(employee_ids) == 1:
-				employee_point_obj.input_point(cr, uid,
-					activity_code='ORDER',
-					roles={
-						'ADM': employee_ids[0],
-					},
-					required_parameters={
-						'BON_ROW_COUNT': row_count,
-					},
-					context=context)
+			employee_point_obj.input_point(cr, uid,
+				activity_code='ORDER',
+				roles={
+					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, sale.create_uid.id, context=context)],
+				},
+				required_parameters={
+					'BON_ROW_COUNT': row_count,
+				},
+				context=context)
 		return result
 	
 

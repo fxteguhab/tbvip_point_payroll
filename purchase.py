@@ -9,11 +9,12 @@ class purchase_order(osv.osv):
 		result = super(purchase_order, self).wkf_confirm_order(cr, uid, ids, context=context)
 		# input points
 		employee_point_obj = self.pool.get('hr.point.employee.point')
-		for purchase in self.browse(cr, uid, ids):
+		employee_obj = self.pool.get('hr.employee')
+		for purchase_id in ids:
 			employee_point_obj.input_point(cr, uid,
 				activity_code='PURCHASE',
 				roles={
-					'ADM': uid,
+					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
 				},
 				required_parameters={
 				},
