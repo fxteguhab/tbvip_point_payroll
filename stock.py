@@ -1,4 +1,3 @@
-from datetime import datetime
 from openerp.osv import osv, fields
 
 # ===========================================================================================================================
@@ -11,6 +10,7 @@ class stock_inventory(osv.osv):
 	
 	def action_done(self, cr, uid, ids, context=None):
 		result = super(stock_inventory, self).action_done(cr, uid, ids, context=context)
+		# input points
 		employee_point_obj = self.pool.get('hr.point.employee.point')
 		for inventory in self.browse(cr, uid, ids, context=context):
 			row_qty = 0

@@ -7,6 +7,7 @@ class sale_order(osv.osv):
 	
 	def action_button_confirm(self, cr, uid, ids, context=None):
 		result = super(sale_order, self).action_button_confirm(cr, uid, ids, context)
+		# input points
 		employee_point_obj = self.pool.get('hr.point.employee.point')
 		for sale in self.browse(cr, uid, ids):
 			value = sale.amount_total
