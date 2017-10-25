@@ -4,3 +4,4 @@ import fleet
 import stock
 import sale
 import purchase
+import hr_point
