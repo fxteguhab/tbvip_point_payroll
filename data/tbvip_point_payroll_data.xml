@@ -33,6 +33,11 @@
 			<field name="code">SPG</field>
 		</record>
 
+		<record id="tbvip_employee_point_role_employee_branch" model="hr.point.employee.role">
+			<field name="name">Branch Employees</field>
+			<field name="code">EMPBRC</field>
+		</record>
+
 		<record id="tbvip_employee_point_role_employee_all" model="hr.point.employee.role">
 			<field name="name">All Employees</field>
 			<field name="code">EMPALL</field>
