@@ -62,5 +62,10 @@
 			<field name="desc">Point Penalty</field>
 		</record>
 
+		<record id="hr_point_type_top" model="hr.point.type">
+			<field name="name">POIN_TOP</field>
+			<field name="desc">Point Top</field>
+		</record>
+
 	</data>
 </openerp>
