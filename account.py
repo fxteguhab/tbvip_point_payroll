@@ -9,6 +9,7 @@ class tbvip_day_end(osv.osv):
 	def action_end_day(self, cr, uid, vals, context={}):
 		branch_obj = self.pool.get('tbvip.branch')
 		employee_obj = self.pool.get('hr.employee')
+		point_type_obj = self.pool.get('hr.point.type')
 		employee_point_obj = self.pool.get('hr.point.employee.point')
 		model_obj = self.pool.get('ir.model.data')
 
@@ -52,12 +53,15 @@ class tbvip_day_end(osv.osv):
 		
 		# Input point TOP today if highest point of employee is not zero
 		if current_highest_point > 0:
-			model, point_type_id = model_obj.get_object_reference(cr, uid, 'tbvip_point_payroll', 'hr_point_type_top')
-			employee_point_vals = {
-				'event_date': datetime.now(),
-				'employee_id': top_employee_id,
-				'point_type_id': point_type_id,
-				'point': 1
-			}
-			new_employee_point_id = employee_point_obj.create(cr, uid, employee_point_vals, context)
+			point_type_ids = point_type_obj.search(cr, uid, [
+				('name', '=', 'POIN_TOP')
+			], limit=1, context=context)
+			if point_type_ids and len(point_type_ids) == 1:
+				employee_point_vals = {
+					'event_date': datetime.now(),
+					'employee_id': top_employee_id,
+					'point_type_id': point_type_ids[0],
+					'point': 1
+				}
+				new_employee_point_id = employee_point_obj.create(cr, uid, employee_point_vals, context)
 		return True
