@@ -38,7 +38,7 @@
 						<field name="branch_id"/>
 						<field name="activity_time"/>
 						<field name="employee_id"/>
-						<field name="additional_activity_id" domain="[('activity_type', '=', context.get('activity_type'))]"/>
+						<field name="additional_activity_id" options="{'no_create':True}" domain="[('activity_type', '=', context.get('activity_type'))]"/>
 						<field name="employee_point_id" invisible="True"/>
 					</group>
 				</form>

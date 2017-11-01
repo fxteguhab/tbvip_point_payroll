@@ -33,7 +33,7 @@ class tbvip_additional_activity(osv.osv):
 
 	def create(self, cr, uid, vals, context=None):
 		self._check_point(cr, uid, vals.get('activity_type', False), vals.get('point', False), context)
-		return super(tbvip_additional_activity_log, self).create(cr, uid, vals, context)
+		return super(tbvip_additional_activity, self).create(cr, uid, vals, context)
 	
 	def write(self, cr, uid, ids, vals, context=None):
 		activity_type = vals.get('activity_type', False)
@@ -51,8 +51,8 @@ class tbvip_additional_activity(osv.osv):
 		#  check point whether it suits the type or not
 		if activity_type == 'extra' and point < 0:
 			raise osv.except_osv(_('Warning!'), _("Extra point should be positive."))
-		if activity_type == 'penalty' and point > 0:
-			raise osv.except_osv(_('Warning!'), _("Penalty point should be negative."))
+		if activity_type == 'penalty' and point < 0:
+			raise osv.except_osv(_('Warning!'), _("Penalty point should be positive, only the payment will be negative."))
 				
 
 # ===========================================================================================================================
