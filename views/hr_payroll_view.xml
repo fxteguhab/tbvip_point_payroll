@@ -1,0 +1,22 @@
+<openerp>
+    <data>
+
+        <record id="view_hr_payslip_form_inherit" model="ir.ui.view">
+            <field name="name">hr.payslip.form.inherit</field>
+            <field name="model">hr.payslip</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@string='Worked Days &amp; Inputs']/field[@name='worked_days_line_ids']/tree//field[@name='number_of_hours']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//page[@string='Salary Computation']/field[@name='line_ids']/tree//field[@name='quantity']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//page[@string='Salary Computation']/field[@name='line_ids']/tree//field[@name='rate']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</openerp>
