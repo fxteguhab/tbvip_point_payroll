@@ -33,7 +33,7 @@ class tbvip_additional_activity(osv.osv):
 
 	def create(self, cr, uid, vals, context=None):
 		self._check_point(cr, uid, vals.get('activity_type', False), vals.get('point', False), context)
-		return super(tbvip_additional_activity_log, self).create(cr, uid, vals, context)
+		return super(tbvip_additional_activity, self).create(cr, uid, vals, context)
 	
 	def write(self, cr, uid, ids, vals, context=None):
 		activity_type = vals.get('activity_type', False)
