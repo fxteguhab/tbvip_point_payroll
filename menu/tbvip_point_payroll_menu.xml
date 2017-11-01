@@ -13,8 +13,8 @@
 			<field name="res_model">tbvip.additional.activity.log</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form</field>
-			<field name="domain">[('point', '>=', 0)]</field>
-			<field name="context">{'menu_from': 'extra'}</field>
+			<field name="domain">[('additional_activity_id.activity_type', '=', 'extra')]</field>
+			<field name="context">{'menu_from': 'extra','activity_type': 'extra'}</field>
 		</record>
 
 		<record id="action_tbvip_additional_activity_penalty_log" model="ir.actions.act_window">
@@ -22,8 +22,8 @@
 			<field name="res_model">tbvip.additional.activity.log</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form</field>
-			<field name="domain">[('point', '&lt;', 0)]</field>
-			<field name="context">{'menu_from': 'penalty'}</field>
+			<field name="domain">[('additional_activity_id.activity_type', '=', 'penalty')]</field>
+			<field name="context">{'menu_from': 'penalty','activity_type': 'penalty'}</field>
 		</record>
 
 		<menuitem id="menu_tbvip_additional_activity" parent="hr_point_payroll.menu_hr_point_configuration"

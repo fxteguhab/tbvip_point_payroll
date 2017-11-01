@@ -3,6 +3,11 @@ from openerp.osv import osv, fields
 from openerp.tools.translate import _
 
 
+_ACTIVITY_TYPE = [
+	('extra', 'Extra'),
+	('penalty', 'Penalty'),
+]
+
 # ===========================================================================================================================
 
 
@@ -14,8 +19,41 @@ class tbvip_additional_activity(osv.osv):
 	
 	_columns = {
 		'name': fields.char('Name', required=True),
-		'desc': fields.text('Description', required=True),
+		'desc': fields.text('Description'),
+		'activity_type': fields.selection(_ACTIVITY_TYPE, 'Activity Type', required=True),
+		'point': fields.float('Point', required=True),
 	}
+	
+
+# DEFAULTS ------------------------------------------------------------------------------------------------------------------
+
+	_defaults = {
+		'activity_type': 'extra',
+	}
+
+	def create(self, cr, uid, vals, context=None):
+		self._check_point(cr, uid, vals.get('activity_type', False), vals.get('point', False), context)
+		return super(tbvip_additional_activity_log, self).create(cr, uid, vals, context)
+	
+	def write(self, cr, uid, ids, vals, context=None):
+		activity_type = vals.get('activity_type', False)
+		point = vals.get('point', False)
+		for activity in self.browse(cr, uid, ids, context=context):
+			# get browsed fields if one of the required field not in vals
+			if not activity_type:
+				activity_type = activity.activity_type
+			if not point:
+				point = activity.point
+			self._check_point(cr, uid, activity_type, point, context)
+		return super(tbvip_additional_activity, self).write(cr, uid, ids, vals, context)
+	
+	def _check_point(self, cr, uid, activity_type, point, context=None):
+		#  check point whether it suits the type or not
+		if activity_type == 'extra' and point < 0:
+			raise osv.except_osv(_('Warning!'), _("Extra point should be positive."))
+		if activity_type == 'penalty' and point > 0:
+			raise osv.except_osv(_('Warning!'), _("Penalty point should be negative."))
+				
 
 # ===========================================================================================================================
 
@@ -31,7 +69,6 @@ class tbvip_additional_activity_log(osv.osv):
 		'branch_id': fields.many2one('tbvip.branch', 'Branch', required=True),
 		'activity_time': fields.datetime('Time', required=True),
 		'additional_activity_id': fields.many2one('tbvip.additional.activity', 'Activity', required=True),
-		'point': fields.float('Point', required=True),
 		'employee_point_id': fields.many2one('hr.point.employee.point', 'Employee Point', ondelete='set null'),
 	}
 	
@@ -54,24 +91,14 @@ class tbvip_additional_activity_log(osv.osv):
 		return result
 	
 	def create(self, cr, uid, vals, context=None):
-		self._check_point(cr, uid, [], vals, context)
 		result = super(tbvip_additional_activity_log, self).create(cr, uid, vals, context)
 		self._create_employee_point(cr, uid, result, context)
 		return result
 	
-	def write(self, cr, uid, ids, vals, context=None):
-		self._check_point(cr, uid, ids, vals, context)
-		result = super(tbvip_additional_activity_log, self).write(cr, uid, ids, vals, context)
-		# self._edit_employee_point(cr, uid, ids, vals, context)
-		return result
-	
-	def _check_point(self, cr, uid, ids, vals, context=None):
-		if vals.get('point', False):
-			if context.get('menu_from', False):
-				if context['menu_from'] == 'extra' and vals['point'] < 0:
-					raise osv.except_osv(_('Warning!'), _("Extra point should be positive."))
-				if context['menu_from'] == 'penalty' and vals['point'] > 0:
-					raise osv.except_osv(_('Warning!'), _("Extra point should be negative."))
+	# def write(self, cr, uid, ids, vals, context=None):
+	# 	result = super(tbvip_additional_activity_log, self).write(cr, uid, ids, vals, context)
+	# 	# self._edit_employee_point(cr, uid, ids, vals, context)
+	# 	return result
 	
 	def _create_employee_point(self, cr, uid, additional_activity_log_id, context=None):
 		"""
@@ -90,7 +117,7 @@ class tbvip_additional_activity_log(osv.osv):
 			'event_date': additional_activity_log.activity_time,
 			'employee_id': additional_activity_log.employee_id.id,
 			'point_type_id': point_type_id,
-			'point': additional_activity_log.point,
+			'point': additional_activity_log.additional_activity_id.point,
 			# 'reference_model': self._name,
 			# 'reference_id': additional_activity_log_id,
 		}
