@@ -20,6 +20,7 @@
 		'views/stock_view.xml',
 		'views/hr_view.xml',
 		'data/tbvip_point_payroll_data.xml',
+		'data/resource.xml',
 	],
 	'demo': [
 	],
