@@ -6,13 +6,27 @@ from openerp.osv import osv, fields
 class tbvip_day_end(osv.osv):
 	_inherit = 'tbvip.day.end'
 	
-	def action_end_day(self, cr, uid, vals, context={}):
+	def create(self, cr, uid, vals, context={}):
+		result = super(tbvip_day_end, self).create(cr, uid, vals, context)
+		
 		branch_obj = self.pool.get('tbvip.branch')
 		employee_obj = self.pool.get('hr.employee')
 		point_type_obj = self.pool.get('hr.point.type')
 		employee_point_obj = self.pool.get('hr.point.employee.point')
 		model_obj = self.pool.get('ir.model.data')
-
+		
+		# input point if it's balanced
+		if 'balance' in vals and vals['balance'] == 0:
+			employee_point_obj.input_point(cr, uid,
+				activity_code='CASH_BALANCE',
+				roles={
+					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
+				},
+				required_parameters={
+				},
+				context=context)
+		
+		# TOP
 		employee_points = {}
 		today = datetime.now()
 		today_start = today.strftime("%Y-%m-%d 00:00:00")
@@ -64,4 +78,4 @@ class tbvip_day_end(osv.osv):
 					'point': 1
 				}
 				new_employee_point_id = employee_point_obj.create(cr, uid, employee_point_vals, context)
-		return True
+		return result

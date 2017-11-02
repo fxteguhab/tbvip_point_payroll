@@ -1,6 +1,8 @@
 <openerp>
 	<data noupdate="1">
 
+
+
 		<!-- EMPLOYEE POINT ROLE -->
 
 		<record id="tbvip_employee_point_role_admin" model="hr.point.employee.role">
@@ -51,6 +53,8 @@
 			<field name="desc">All Employees</field>
 		</record>
 
+
+
 		<!-- POINT TYPE -->
 
 		<record id="hr_point_type_xtra" model="hr.point.type">
@@ -93,25 +97,31 @@
 			<field name="desc">Point ADM</field>
 		</record>
 
+
+
 		<!-- Point Activities -->
+
 		<record id="hr_point_activity_order" model="hr.point.activity">
 			<field name="name">ORDER</field>
 			<field name="code">ORDER</field>
 			<field name="point_employee_role_ids" eval="[
 				(6, 0, [ref('tbvip_employee_point_role_admin')])]"/>
 		</record>
+
 		<record id="hr_point_activity_purchase" model="hr.point.activity">
 			<field name="name">PURCHASE</field>
 			<field name="code">PURCHASE</field>
 			<field name="point_employee_role_ids" eval="[
 				(6, 0, [ref('tbvip_employee_point_role_admin'), ref('tbvip_employee_point_role_driver'), ref('tbvip_employee_point_role_driver2')])]"/>
 		</record>
+
 		<record id="hr_point_activity_so" model="hr.point.activity">
 			<field name="name">SO</field>
 			<field name="code">SO</field>
 			<field name="point_employee_role_ids" eval="[
 				(6, 0, [ref('tbvip_employee_point_role_admin'), ref('tbvip_employee_point_role_employee'), ref('tbvip_employee_point_role_employee_branch')])]"/>
 		</record>
+
 		<record id="hr_point_activity_sales" model="hr.point.activity">
 			<field name="name">SALES</field>
 			<field name="code">SALES</field>
@@ -124,24 +134,28 @@
 			<field name="point_employee_role_ids" eval="[
 				(6, 0, [ref('tbvip_employee_point_role_admin'), ref('tbvip_employee_point_role_driver'), ref('tbvip_employee_point_role_driver2')])]"/>
 		</record>
+
 		<record id="hr_point_activity_payment" model="hr.point.activity">
 			<field name="name">PAYMENT</field>
 			<field name="code">PAYMENT</field>
 			<field name="point_employee_role_ids" eval="[
 				(6, 0, [ref('tbvip_employee_point_role_admin')])]"/>
 		</record>
+
 		<record id="hr_point_activity_misc" model="hr.point.activity">
 			<field name="name">MISC</field>
 			<field name="code">MISC</field>
 			<field name="point_employee_role_ids" eval="[
 				(6, 0, [ref('tbvip_employee_point_role_employee')])]"/>
 		</record>
+
 		<record id="hr_point_activity_cash_balance" model="hr.point.activity">
 			<field name="name">CASH_BALANCE</field>
 			<field name="code">CASH_BALANCE</field>
 			<field name="point_employee_role_ids" eval="[
 				(6, 0, [ref('tbvip_employee_point_role_admin')])]"/>
 		</record>
+
 		<record id="hr_point_activity_attendance" model="hr.point.activity">
 			<field name="name">ATTENDANCE</field>
 			<field name="code">ATTENDANCE</field>
@@ -149,7 +163,10 @@
 				(6, 0, [ref('tbvip_employee_point_role_employee')])]"/>
 		</record>
 
+
+
 		<!-- Point Rules -->
+
 		<record id="hr_point_rule_purchase_admin" model="hr.point.rule">
 			<field name="name">SO_EMPLOYEE</field>
 			<field name="point_employee_activity_id" eval="ref('hr_point_activity_so')"/>
@@ -158,6 +175,7 @@
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
 	return ((factors['ROW_QTY']/24) * 0.5)</field>
 		</record>
+
 		<record id="hr_point_rule_so_admin" model="hr.point.rule">
 			<field name="name">SO_ADMIN</field>
 			<field name="point_employee_activity_id" eval="ref('hr_point_activity_so')"/>
@@ -166,6 +184,7 @@
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
     return ((factors['ROW_QTY']/24) * 0.5)/2</field>
 		</record>
+
 		<record id="hr_point_rule_sales_admin" model="hr.point.rule">
 			<field name="name">SALES_ADMIN</field>
 			<field name="point_employee_activity_id" eval="ref('hr_point_activity_sales')"/>
@@ -174,6 +193,7 @@
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
 	return 0.4</field>
 		</record>
+
 		<record id="hr_point_rule_sales_employee_std" model="hr.point.rule">
 			<field name="name">SALES_EMPLOYEE_STD</field>
 			<field name="point_employee_activity_id" eval="ref('hr_point_activity_sales')"/>
@@ -182,6 +202,7 @@
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
 	return 1</field>
 		</record>
+
 		<record id="hr_point_rule_sales_employee_value_bon" model="hr.point.rule">
 			<field name="name">SALES_EMPLOYEE_VALUE_BON</field>
 			<field name="point_employee_activity_id" eval="ref('hr_point_activity_sales')"/>
@@ -190,6 +211,7 @@
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
 	return 1 if factors['BON_VALUE'] >= 1000000 else 0</field>
 		</record>
+
 		<record id="hr_point_rule_sales_employee_qty_bon" model="hr.point.rule">
 			<field name="name">SALES_EMPLOYEE_QTY_BON</field>
 			<field name="point_employee_activity_id" eval="ref('hr_point_activity_sales')"/>
@@ -198,6 +220,7 @@
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
 	return 1 if factors['BON_QTY_SUM'] >= 36 else 0</field>
 		</record>
+
 		<record id="hr_point_rule_sales_employee_row_count" model="hr.point.rule">
 			<field name="name">SALES_EMPLOYEE_ROW_COUNT</field>
 			<field name="point_employee_activity_id" eval="ref('hr_point_activity_sales')"/>
@@ -206,6 +229,7 @@
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
 	return 1 if factors['BON_ROW_COUNT'] >= 10 else 0</field>
 		</record>
+
 		<record id="hr_point_rule_purchase_admin" model="hr.point.rule">
 			<field name="name">PURCHASE_ADMIN</field>
 			<field name="point_employee_activity_id" eval="ref('hr_point_activity_purchase')"/>
@@ -214,6 +238,7 @@
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
 	return 0.8</field>
 		</record>
+
 		<record id="hr_point_rule_canvas_employee_mobil" model="hr.point.rule">
 			<field name="name">CANVAS_EMPLOYEE_MOBIL</field>
 			<field name="point_employee_activity_id" eval="ref('hr_point_activity_canvass')"/>
@@ -229,6 +254,7 @@
 			return 5
 	return 0</field>
 		</record>
+
 		<record id="hr_point_rule_canvas_employee_motor" model="hr.point.rule">
 			<field name="name">CANVAS_EMPLOYEE_MOTOR</field>
 			<field name="point_employee_activity_id" eval="ref('hr_point_activity_canvass')"/>
@@ -244,6 +270,7 @@
 			return 7
 	return 0</field>
 		</record>
+
 		<record id="hr_point_rule_canvas_employee_motor" model="hr.point.rule">
 			<field name="name">CANVASS_EMPLOYEE_MOTOR_SELF_XTRA</field>
 			<field name="point_employee_activity_id" eval="ref('hr_point_activity_canvass')"/>
@@ -252,6 +279,7 @@
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
 	return 1 if factors['VEHICLE_TYPE'] == 'bike' and factors['SELF_OWN'] else 0</field>
 		</record>
+
 		<record id="hr_point_rule_order_admin" model="hr.point.rule">
 			<field name="name">ORDER_ADMIN</field>
 			<field name="point_employee_activity_id" eval="ref('hr_point_activity_order')"/>
@@ -260,6 +288,7 @@
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
 	return (factors['BON_ROW_COUNT']*0.4) + factors['BON_ROW_COUNT']</field>
 		</record>
+
 		<record id="hr_point_rule_so_employee_penalty" model="hr.point.rule">
 			<field name="name">SO_EMPLOYEE_PENALTY</field>
 			<field name="point_employee_activity_id" eval="ref('hr_point_activity_so')"/>
@@ -286,6 +315,15 @@
 			else:
 				penalty_point = penalty_total
 	return penalty_point</field>
+		</record>
+
+		<record id="hr_point_rule_cash_balance" model="hr.point.rule">
+			<field name="name">CASH_BALANCE</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_cash_balance')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_xtra')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return 6</field>
 		</record>
 
 
