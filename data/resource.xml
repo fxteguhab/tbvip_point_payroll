@@ -1,0 +1,19 @@
+<openerp>
+	<data noupdate="1">
+
+		<!-- Working Schedule -->
+
+		<record id="resource_standard_working_schedule" model="resource.calendar">
+			<field name="name">Standard Working Schedule</field>
+			<field name="attendance_ids" eval="[
+			(0, 0, {'name': 'Senin', 'dayofweek': '0', 'hour_from': 8, 'hour_to': 17.5}),
+			(0, 0, {'name': 'Selasa', 'dayofweek': '1', 'hour_from': 8, 'hour_to': 17.5}),
+			(0, 0, {'name': 'Rabu', 'dayofweek': '2', 'hour_from': 8, 'hour_to': 17.5}),
+			(0, 0, {'name': 'Kamis', 'dayofweek': '3', 'hour_from': 8, 'hour_to': 17.5}),
+			(0, 0, {'name': 'Jumat', 'dayofweek': '4', 'hour_from': 8, 'hour_to': 17.5}),
+			(0, 0, {'name': 'Sabtu', 'dayofweek': '5', 'hour_from': 8, 'hour_to': 17.5})
+			]"/>
+		</record>
+
+	</data>
+</openerp>

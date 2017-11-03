@@ -8,3 +8,4 @@ import stock_opname
 import sale
 import purchase
 import hr_point
+import hr_payroll

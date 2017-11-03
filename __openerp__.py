@@ -21,6 +21,7 @@
 		'views/hr_view.xml',
 		'views/hr_payroll_view.xml',
 		'data/tbvip_point_payroll_data.xml',
+		'data/resource.xml',
 	],
 	'demo': [
 	],
