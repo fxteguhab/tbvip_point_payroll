@@ -153,7 +153,7 @@
 			<field name="name">CASH_BALANCE</field>
 			<field name="code">CASH_BALANCE</field>
 			<field name="point_employee_role_ids" eval="[
-				(6, 0, [ref('tbvip_employee_point_role_admin')])]"/>
+				(6, 0, [ref('tbvip_employee_point_role_admin'), ref('tbvip_employee_point_role_employee_branch')])]"/>
 		</record>
 
 		<record id="hr_point_activity_attendance" model="hr.point.activity">
@@ -317,13 +317,40 @@
 	return penalty_point</field>
 		</record>
 
-		<record id="hr_point_rule_cash_balance" model="hr.point.rule">
-			<field name="name">CASH_BALANCE</field>
+		<record id="hr_point_rule_cash_balance_admin_extra" model="hr.point.rule">
+			<field name="name">CASH_BALANCE_ADMIN_EXTRA</field>
 			<field name="point_employee_activity_id" eval="ref('hr_point_activity_cash_balance')"/>
 			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
 			<field name="point_type_id" eval="ref('hr_point_type_xtra')"/>
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
-	return 6</field>
+	return 4 if factors['BALANCE'] == 0 else 0</field>
+		</record>
+
+		<record id="hr_point_rule_cash_balance_admin_penalty" model="hr.point.rule">
+			<field name="name">CASH_BALANCE_ADMIN_PENALTY</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_cash_balance')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_penalty')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return 1 if factors['BALANCE'] != 0 else 0</field>
+		</record>
+
+		<record id="hr_point_rule_cash_balance_branch_extra" model="hr.point.rule">
+			<field name="name">CASH_BALANCE_EMPLOYEE_EXTRA</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_cash_balance')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_employee_branch')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_xtra')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return 2 if factors['BALANCE'] == 0 else 0</field>
+		</record>
+
+		<record id="hr_point_rule_cash_balance_branch_penalty" model="hr.point.rule">
+			<field name="name">CASH_BALANCE_EMPLOYEE_PENALTY</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_cash_balance')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_employee_branch')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_penalty')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return 1 if factors['BALANCE'] != 0 else 0</field>
 		</record>
 
 
