@@ -13,7 +13,6 @@ class tbvip_day_end(osv.osv):
 		employee_obj = self.pool.get('hr.employee')
 		point_type_obj = self.pool.get('hr.point.type')
 		employee_point_obj = self.pool.get('hr.point.employee.point')
-		model_obj = self.pool.get('ir.model.data')
 		
 		day_end_date = vals['day_end_date']
 		day_end_date_datetime = datetime.strptime(day_end_date, '%Y-%m-%d %H:%M:%S')
@@ -40,6 +39,7 @@ class tbvip_day_end(osv.osv):
 					required_parameters={
 						'BALANCE':  last_day_end.balance,
 					},
+					reference='Day End - {} - Correction {}'.format(day_end_date_datetime, vals['amend_number']),
 					context=context)
 		
 		# input point if balanced or not, can be extra or penalty
@@ -52,6 +52,7 @@ class tbvip_day_end(osv.osv):
 			required_parameters={
 				'BALANCE':  vals['balance'],
 			},
+			reference='Day End - {}'.format(day_end_date_datetime),
 			context=context)
 		
 		if vals['amend_number'] == 0:
@@ -97,10 +98,11 @@ class tbvip_day_end(osv.osv):
 				], limit=1, context=context)
 				if point_type_ids and len(point_type_ids) == 1:
 					employee_point_vals = {
-						'event_date': datetime.now(),
+						'event_date': day_end_date_datetime,
 						'employee_id': top_employee_id,
 						'point_type_id': point_type_ids[0],
-						'point': 1
+						'point': 1,
+						'reference': 'Day End - {}'.format(day_end_date_datetime),
 					}
 					new_employee_point_id = employee_point_obj.create(cr, uid, employee_point_vals, context)
 		return result_id

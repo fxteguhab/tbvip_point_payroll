@@ -28,6 +28,7 @@ class sale_order(osv.osv):
 					'BON_QTY_SUM': qty_sum,
 					'BON_ROW_COUNT': row_count,
 				},
+				reference='Sales Order - {}'.format(sale.name),
 				context=context)
 			# sales draft creator
 			employee_point_obj.input_point(cr, uid,
@@ -38,6 +39,7 @@ class sale_order(osv.osv):
 				required_parameters={
 					'BON_ROW_COUNT': row_count,
 				},
+				reference='Sale Order - {}'.format(sale.name),
 				context=context)
 		return result
 	
