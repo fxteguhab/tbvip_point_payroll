@@ -26,3 +26,11 @@ class hr_employee(osv.osv):
 			('user_id', 'in', user_ids),
 		], context=context)
 		return employee_ids
+
+class hr_contract(osv.osv):
+	_inherit = 'hr.contract'
+	
+	_defaults = {
+		'working_hours': lambda self, cr, uid, ctx: self.pool.get('ir.model.data')
+			.get_object(cr, uid, 'tbvip_point_payroll', 'resource_standard_working_schedule').id,
+	}
