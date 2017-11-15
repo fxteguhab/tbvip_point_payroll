@@ -1,3 +1,4 @@
+import collections
 from openerp.osv import osv
 
 
@@ -14,12 +15,13 @@ class hr_payslip(osv.Model):
 		to_be_deleted = -1
 		if values:
 			worked_days_line_ids = values.get('worked_days_line_ids', False)
-			for idx, val in enumerate(worked_days_line_ids):
-				if isinstance(val, dict):
-					code = val.get('code', False)
-					if code == 'WORK100':
-						to_be_deleted = idx
-				break
+			if isinstance(worked_days_line_ids, collections.Iterable):
+				for idx, val in enumerate(worked_days_line_ids):
+					if isinstance(val, dict):
+						code = val.get('code', False)
+						if code == 'WORK100':
+							to_be_deleted = idx
+					break
 			if to_be_deleted >= 0:
 				worked_days_line_ids.pop(to_be_deleted)
 		return result
