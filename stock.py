@@ -39,6 +39,7 @@ class stock_inventory(osv.osv):
 							'NEW_QTY': line.product_qty,
 							'EMPLOYEE_BRANCH_COUNT': len(branch_employee_ids),
 						},
+						reference='Stock Opname - {}'.format(inventory.name),
 						context=context)
 			# point for doing task
 			employee_point_obj.input_point(cr, uid,
@@ -50,5 +51,6 @@ class stock_inventory(osv.osv):
 				required_parameters={
 					'ROW_QTY': row_total_qty
 				},
+				reference='Stock Opname - {}'.format(inventory.name),
 				context=context)
 		return result

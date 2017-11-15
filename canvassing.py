@@ -22,5 +22,6 @@ class canvassing_canvas(osv.osv):
 					'DISTANCE': canvass.distance,
 					'SELF_OWN': vehicle.is_self_own,
 				},
+				reference='Canvassing - {}'.format(canvass.name),
 				context=context)
 		return result

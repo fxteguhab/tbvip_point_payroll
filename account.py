@@ -57,11 +57,13 @@ class tbvip_day_end(osv.osv):
 				('name', '=', 'POIN_TOP')
 			], limit=1, context=context)
 			if point_type_ids and len(point_type_ids) == 1:
+				now = datetime.now()
 				employee_point_vals = {
-					'event_date': datetime.now(),
+					'event_date': now,
 					'employee_id': top_employee_id,
 					'point_type_id': point_type_ids[0],
-					'point': 1
+					'point': 1,
+					'reference': 'Day End - {}'.format(now)
 				}
 				new_employee_point_id = employee_point_obj.create(cr, uid, employee_point_vals, context)
 		return True

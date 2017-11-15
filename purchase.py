@@ -18,5 +18,6 @@ class purchase_order(osv.osv):
 				},
 				required_parameters={
 				},
+				reference='Purchase Order - {}'.format(purchase_id.name),
 				context=context)
 		return result
