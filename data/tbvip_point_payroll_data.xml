@@ -153,7 +153,7 @@
 			<field name="name">CASH_BALANCE</field>
 			<field name="code">CASH_BALANCE</field>
 			<field name="point_employee_role_ids" eval="[
-				(6, 0, [ref('tbvip_employee_point_role_admin'), ref('tbvip_employee_point_role_employee_branch', ref('tbvip_employee_point_role_employee_branch'))])]"/>
+				(6, 0, [ref('tbvip_employee_point_role_admin'), ref('tbvip_employee_point_role_employee_branch'), ref('tbvip_employee_point_role_employee_branch')])]"/>
 		</record>
 
 		<record id="hr_point_activity_attendance" model="hr.point.activity">
