@@ -10,7 +10,7 @@ class purchase_order(osv.osv):
 		# input points
 		employee_point_obj = self.pool.get('hr.point.employee.point')
 		employee_obj = self.pool.get('hr.employee')
-		for purchase_id in ids:
+		for purchase in self.browse(cr, uid, ids, context=context):
 			employee_point_obj.input_point(cr, uid,
 				activity_code='PURCHASE',
 				roles={
@@ -18,6 +18,6 @@ class purchase_order(osv.osv):
 				},
 				required_parameters={
 				},
-				reference='Purchase Order - {}'.format(purchase_id.name),
+				reference='Purchase Order - {}'.format(purchase.name),
 				context=context)
 		return result
