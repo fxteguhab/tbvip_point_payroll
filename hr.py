@@ -27,6 +27,9 @@ class hr_employee(osv.osv):
 		], context=context)
 		return employee_ids
 
+
+# ==========================================================================================================================
+
 class hr_contract(osv.osv):
 	_inherit = 'hr.contract'
 	
@@ -34,3 +37,23 @@ class hr_contract(osv.osv):
 		'working_hours': lambda self, cr, uid, ctx: self.pool.get('ir.model.data')
 			.get_object(cr, uid, 'tbvip_point_payroll', 'resource_standard_working_schedule').id,
 	}
+
+
+# ==========================================================================================================================
+
+class hr_attendance(osv.osv):
+	_inherit = 'hr.attendance'
+
+	def late_attendance(self, cr, uid, late_employee_id, late_minutes, context=None):
+		if late_minutes > 0:
+			employee_point_obj = self.pool.get('hr.point.employee.point')
+			employee_point_obj.input_point(cr, uid,
+				activity_code='ATTENDANCE',
+				roles={
+					'EMP': late_employee_id,
+				},
+				required_parameters={
+					'LATE_MINUTES': late_minutes,
+				},
+				reference='Attendance Late',
+				context=context)

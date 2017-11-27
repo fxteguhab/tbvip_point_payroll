@@ -353,6 +353,15 @@
 	return 1 if factors['BALANCE'] != 0 else 0</field>
 		</record>
 
+		<record id="hr_point_rule_attendance_late" model="hr.point.rule">
+			<field name="name">ATTENDANCE_LATE</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_attendance')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_employee')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_penalty')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return 1 * factors['LATE_MINUTES'] if factors['LATE_MINUTES'] > 0 else 0</field>
+		</record>
+
 
 	</data>
 </openerp>
