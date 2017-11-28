@@ -173,7 +173,7 @@
 			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_employee')"/>
 			<field name="point_type_id" eval="ref('hr_point_type_so')"/>
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
-	return ((factors['ROW_QTY']/24) * 0.5)</field>
+	return ((factors['ROW_QTY']/24) * 0.5) + factors['ROW_COUNT']</field>
 		</record>
 
 		<record id="hr_point_rule_so_admin" model="hr.point.rule">

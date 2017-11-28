@@ -49,7 +49,8 @@ class stock_inventory(osv.osv):
 					'EMP': [inventory.employee_id.id],
 				},
 				required_parameters={
-					'ROW_QTY': row_total_qty
+					'ROW_QTY': row_total_qty,
+					'ROW_COUNT': len(inventory.line_ids),
 				},
 				reference='Stock Opname - {}'.format(inventory.name),
 				context=context)
