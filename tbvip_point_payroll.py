@@ -75,7 +75,7 @@ class tbvip_additional_activity_log(osv.osv):
 # DEFAULTS ------------------------------------------------------------------------------------------------------------------
 	
 	_defaults = {
-		'activity_time': datetime.now(),
+		'activity_time': lambda self, cr, uid, ctx: datetime.now(),
 		'branch_id': lambda self, cr, uid, *args: self.pool.get('res.users').browse(cr, uid, [uid]).branch_id.id,
 	}
 	
