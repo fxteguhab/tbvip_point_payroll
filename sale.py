@@ -30,17 +30,6 @@ class sale_order(osv.osv):
 				},
 				reference='Sales Order - {}'.format(sale.name),
 				context=context)
-			# sales draft creator
-			employee_point_obj.input_point(cr, uid,
-				activity_code='ORDER',
-				roles={
-					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, sale.create_uid.id, context=context)],
-				},
-				required_parameters={
-					'BON_ROW_COUNT': row_count,
-				},
-				reference='Sale Order - {}'.format(sale.name),
-				context=context)
 		return result
 	
 
