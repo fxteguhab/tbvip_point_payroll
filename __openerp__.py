@@ -20,8 +20,10 @@
 		'views/stock_view.xml',
 		'views/hr_view.xml',
 		'views/hr_payroll_view.xml',
+		'views/working_hour.xml',
 		'data/tbvip_point_payroll_data.xml',
 		'data/resource.xml',
+		'security/ir.model.access.csv',
 	],
 	'demo': [
 	],

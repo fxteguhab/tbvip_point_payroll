@@ -8,7 +8,13 @@ class hr_payslip(osv.Model):
 	# OVERRIDES -----------------------------------------------------------------------------------------------------------------
 	
 	def onchange_employee_id(self, cr, uid, ids, date_from, date_to, employee_id=False, contract_id=False, context=None):
-		result = super(hr_payslip, self).onchange_employee_id(cr, uid, ids, date_from, date_to,employee_id, contract_id, context)
+		# insert branch_id to context to filter the search of exception working hours
+		if employee_id:
+			employee_obj = self.pool.get('hr.employee')
+			employee = employee_obj.browse(cr, uid, employee_id)
+			context = dict(context)
+			context['branch_id'] = employee.user_id.branch_id.id
+		result = super(hr_payslip, self).onchange_employee_id(cr, uid, ids, date_from, date_to, employee_id, contract_id, context)
 		
 		# Remove WORK100 from worked days
 		values = result.get('value', False)

@@ -1,0 +1,26 @@
+<openerp>
+	<data>
+
+		<record id="exception_working_hour_form_inherit" model="ir.ui.view">
+			<field name="name">exception.working.hour.form.inherit</field>
+			<field name="model">exception.working.hour</field>
+			<field name="inherit_id" ref="hr_point_payroll.exception_working_hour_form"/>
+			<field name="arch" type="xml">
+				<field name="date" position="before">
+					<field name="branch_id"/>
+				</field>
+			</field>
+		</record>
+		<record id="exception_working_hour_tree_inherit" model="ir.ui.view">
+			<field name="name">exception.working.hour.tree.inherit</field>
+			<field name="model">exception.working.hour</field>
+			<field name="inherit_id" ref="hr_point_payroll.exception_working_hour_tree"/>
+			<field name="arch" type="xml">
+				<field name="date" position="before">
+					<field name="branch_id"/>
+				</field>
+			</field>
+		</record>
+
+	</data>
+</openerp>
