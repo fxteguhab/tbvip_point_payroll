@@ -9,7 +9,7 @@ class hr_payslip(osv.Model):
 	
 	def onchange_employee_id(self, cr, uid, ids, date_from, date_to, employee_id=False, contract_id=False, context=None):
 		# insert branch_id to context to filter the search of exception working hours
-		if employee_id:
+		if employee_id and context:
 			employee_obj = self.pool.get('hr.employee')
 			employee = employee_obj.browse(cr, uid, employee_id)
 			context = dict(context)
