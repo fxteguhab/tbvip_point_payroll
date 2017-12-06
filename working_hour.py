@@ -46,7 +46,7 @@ class exception_working_hour(osv.osv):
 	
 	def get_working_hour_ids(self, cr, uid, date, limit=None, context=None):
 		""" Attention! You have to put branch_id as parameter in the context if you want to use it """
-		if context.get('branch_id', False):
+		if context and context.get('branch_id', False):
 			return self.search(cr, uid, [
 				('branch_id', '=', context['branch_id']),
 				('date', '=', date)
