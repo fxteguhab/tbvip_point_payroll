@@ -31,3 +31,14 @@ class hr_payslip(osv.Model):
 			if to_be_deleted >= 0:
 				worked_days_line_ids.pop(to_be_deleted)
 		return result
+	
+	def hr_verify_sheet(self, cr, uid, ids, context=None):
+		result = self.compute_sheet(cr, uid, ids, context)
+		hr_attendance_obj = self.pool.get('hr.attendance')
+		# Input Points per date
+		for date_obj in result['total_overtime_and_late_per_date']:
+			hr_attendance_obj.late_attendance(cr, uid, [result['employee_id']],
+				date_obj['late'] + date_obj['early_leave'], date_obj['date'], context=context)
+			hr_attendance_obj.overtime_attendance(cr, uid, [result['employee_id']],
+				date_obj['early_overtime'] + date_obj['late_overtime'], date_obj['date'], context=context)
+		return super(hr_payslip, self).hr_verify_sheet(cr, uid, ids, context)

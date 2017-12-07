@@ -44,16 +44,32 @@ class hr_contract(osv.osv):
 class hr_attendance(osv.osv):
 	_inherit = 'hr.attendance'
 
-	def late_attendance(self, cr, uid, late_employee_id, late_minutes, context=None):
+	def late_attendance(self, cr, uid, late_employee_ids, late_minutes, date, context=None):
 		if late_minutes > 0:
 			employee_point_obj = self.pool.get('hr.point.employee.point')
 			employee_point_obj.input_point(cr, uid,
 				activity_code='ATTENDANCE',
 				roles={
-					'EMP': late_employee_id,
+					'EMP': late_employee_ids,
 				},
 				required_parameters={
 					'LATE_MINUTES': late_minutes,
+					'OVERTIME_MINUTES': 0,
 				},
-				reference='Attendance Late',
+				reference='Attendance Late - {}'.format(date),
+				context=context)
+
+	def overtime_attendance(self, cr, uid, overtime_employee_ids, overtime_minutes, date, context=None):
+		if overtime_minutes > 0:
+			employee_point_obj = self.pool.get('hr.point.employee.point')
+			employee_point_obj.input_point(cr, uid,
+				activity_code='ATTENDANCE',
+				roles={
+					'EMP': overtime_employee_ids,
+				},
+				required_parameters={
+					'LATE_MINUTES': 0,
+					'OVERTIME_MINUTES': overtime_minutes,
+				},
+				reference='Attendance Overtime - {}'.format(date),
 				context=context)
