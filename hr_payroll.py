@@ -1,5 +1,6 @@
 import collections
 from openerp.osv import osv
+from openerp.tools.translate import _
 
 
 class hr_payslip(osv.Model):
@@ -34,6 +35,16 @@ class hr_payslip(osv.Model):
 	
 	def hr_verify_sheet(self, cr, uid, ids, context=None):
 		result = self.compute_sheet(cr, uid, ids, context)
+		for payslip in self.browse(cr, uid, ids, context):
+			employee_week_payroll_ids = self.search(cr, uid, [
+				('date_week', '=', payslip.date_week),
+				('date_year', '=', payslip.date_year),
+				('employee_id', '=', payslip.employee_id.id),
+				('state', '=', 'done'),
+			], context=context)
+			if employee_week_payroll_ids and len(employee_week_payroll_ids) > 0:
+				raise osv.except_osv(_('Error!'), _("This employee has already had confirmed payslip in the same week and year."))
+		
 		hr_attendance_obj = self.pool.get('hr.attendance')
 		# Input Points per date
 		for date_obj in result['total_overtime_and_late_per_date']:
@@ -41,4 +52,5 @@ class hr_payslip(osv.Model):
 				date_obj['late'] + date_obj['early_leave'], date_obj['date'], context=context)
 			hr_attendance_obj.overtime_attendance(cr, uid, [result['employee_id']],
 				date_obj['early_overtime'] + date_obj['late_overtime'], date_obj['date'], context=context)
+		self.compute_sheet(cr, uid, ids, context)  # compute sheet once again to rewrite xtra / penalty if there's any change
 		return super(hr_payslip, self).hr_verify_sheet(cr, uid, ids, context)
