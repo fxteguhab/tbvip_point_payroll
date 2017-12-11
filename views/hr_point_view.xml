@@ -1,0 +1,19 @@
+<openerp>
+	<data>
+
+		<record id="hr_point_type_form_inherit" model="ir.ui.view">
+			<field name="name">hr.point.type.form.inherit</field>
+			<field name="model">hr.point.type</field>
+			<field name="inherit_id" ref="hr_point_payroll.hr_point_type_form"/>
+			<field name="arch" type="xml">
+				<group position="before">
+					<header>
+						<button name="action_reset_all_points" string="Reset All Points" type="object"
+								groups="tbvip.group_management_central" confirm="WARNING !!! Are you sure to reset all employee's point history, all additional activity logs, and all employee's level? This action cannot be undone. All records will be deleted from your database."/>
+					</header>
+				</group>
+			</field>
+		</record>
+
+	</data>
+</openerp>
