@@ -10,8 +10,8 @@ class account_voucher(osv.osv):
 	
 	def create(self, cr, uid, val, context=None):
 		result = super(account_voucher, self).create(cr, uid, val, context=context)
-		
-		if result.type == 'payment':
+		voucher = self.browse(cr, uid, result)
+		if voucher.type == 'payment':
 			employee_point_obj = self.pool.get('hr.point.employee.point')
 			employee_obj = self.pool.get('hr.employee')
 			employee_point_obj.input_point(cr, uid,
@@ -20,7 +20,7 @@ class account_voucher(osv.osv):
 					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
 				},
 				required_parameters={},
-				reference='Supplier Payment Create- {}'.format(result.name),
+				reference='Supplier Payment Create- {}'.format(voucher.number),
 				context=context)
 			
 		return result
@@ -39,7 +39,7 @@ class account_voucher(osv.osv):
 					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
 				},
 				required_parameters={},
-				reference='Customer Payment - {}'.format(voucher.name),
+				reference='Customer Payment - {}'.format(voucher.number),
 					context=context)
 		# Supplier Payment
 			elif voucher.type == 'payment':
@@ -49,7 +49,7 @@ class account_voucher(osv.osv):
 						'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
 					},
 					required_parameters={},
-					reference='Supplier Payment - {}'.format(voucher.name),
+					reference='Supplier Payment - {}'.format(voucher.number),
 					context=context)
 		
 		return result
