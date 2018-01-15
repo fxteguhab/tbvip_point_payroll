@@ -211,6 +211,13 @@
 				(6, 0, [ref('tbvip_employee_point_role_employee')])]"/>
 		</record>
 
+		<record id="hr_point_activity_direct_production" model="hr.point.activity">
+			<field name="name">DIRECT_PRODUCTION</field>
+			<field name="code">DIRECT_PRODUCTION</field>
+			<field name="point_employee_role_ids" eval="[
+				(6, 0, [ref('tbvip_employee_point_role_admin')])]"/>
+		</record>
+
 
 
 		<!-- POINT RULES -->
@@ -510,6 +517,14 @@
 	return penalty_point</field>
 		</record>
 
+		<record id="hr_point_rule_direct_production_admin" model="hr.point.rule">
+			<field name="name">DIRECT_PRODUCTION_ADMIN</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_direct_production')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_adm')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return 0.2</field>
+		</record>
 
 		<!-- HR -->
 
