@@ -33,7 +33,7 @@ class stock_opname_memory(osv.osv_memory):
 					roles={
 						'ADM': [uid],
 						'EMPBRC': [uid],
-						'EMPALL': [uid],
+						'EMPALL': [memory.employee_id.id],
 					},
 					required_parameters={
 						'ROW_QTY': row_qty,
