@@ -239,9 +239,16 @@
 				(6, 0, [ref('tbvip_employee_point_role_admin')])]"/>
 		</record>
 
-		<record id="hr_point_activity_interbranch_transfer" model="hr.point.activity">
-			<field name="name">INTERBRANCH_TRANSFER</field>
-			<field name="code">INTERBRANCH_TRANSFER</field>
+		<record id="hr_point_activity_interbranch_transfer_send" model="hr.point.activity">
+			<field name="name">INTERBRANCH_TRANSFER_SEND</field>
+			<field name="code">INTERBRANCH_TRANSFER_SEND</field>
+			<field name="point_employee_role_ids" eval="[
+				(6, 0, [ref('tbvip_employee_point_role_admin'), ref('tbvip_employee_point_role_employee')])]"/>
+		</record>
+
+		<record id="hr_point_activity_interbranch_transfer_receive" model="hr.point.activity">
+			<field name="name">INTERBRANCH_TRANSFER_RECEIVE</field>
+			<field name="code">INTERBRANCH_TRANSFER_RECEIVE</field>
 			<field name="point_employee_role_ids" eval="[
 				(6, 0, [ref('tbvip_employee_point_role_admin'), ref('tbvip_employee_point_role_employee')])]"/>
 		</record>
@@ -579,7 +586,7 @@
 
 		<record id="hr_point_rule_interbranch_sender_admin" model="hr.point.rule">
 			<field name="name">INTERBRANCH_SENDER_ADMIN</field>
-			<field name="point_employee_activity_id" eval="ref('hr_point_activity_interbranch_transfer')"/>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_interbranch_transfer_send')"/>
 			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
 			<field name="point_type_id" eval="ref('hr_point_type_adm')"/>
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
@@ -588,7 +595,7 @@
 
 		<record id="hr_point_rule_interbranch_receiver_admin" model="hr.point.rule">
 			<field name="name">INTERBRANCH_RECEIVER_ADMIN</field>
-			<field name="point_employee_activity_id" eval="ref('hr_point_activity_interbranch_transfer')"/>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_interbranch_transfer_receiver')"/>
 			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
 			<field name="point_type_id" eval="ref('hr_point_type_adm')"/>
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
@@ -597,7 +604,7 @@
 
 		<record id="hr_point_rule_interbranch_sender_employee" model="hr.point.rule">
 			<field name="name">INTERBRANCH_SENDER_EMPLOYEE</field>
-			<field name="point_employee_activity_id" eval="ref('hr_point_activity_interbranch_transfer')"/>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_interbranch_transfer_send')"/>
 			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_employee')"/>
 			<field name="point_type_id" eval="ref('hr_point_type_xtra')"/>
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
@@ -606,7 +613,7 @@
 
 		<record id="hr_point_rule_interbranch_receiver_employee" model="hr.point.rule">
 			<field name="name">INTERBRANCH_RECEIVER_EMPLOYEE</field>
-			<field name="point_employee_activity_id" eval="ref('hr_point_activity_interbranch_transfer')"/>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_interbranch_transfer_receiver')"/>
 			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_employee')"/>
 			<field name="point_type_id" eval="ref('hr_point_type_xtra')"/>
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
