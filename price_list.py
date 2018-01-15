@@ -19,7 +19,7 @@ class price_list(osv.osv):
 		elif vals['type'] == 'category':
 			row_count += len(vals['line_category_ids'])
 		employee_point_obj.input_point(cr, uid,
-			activity_code='SALES',
+			activity_code='PRICE_LIST',
 			roles={
 				'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
 			},
@@ -42,12 +42,12 @@ class product_current_price(osv.osv):
 		employee_obj = self.pool.get('hr.employee')
 		product_obj = self.pool.get('product.product')
 		employee_point_obj.input_point(cr, uid,
-			activity_code='SALES',
+			activity_code='PRODUCT_CURRENT_PRICE',
 			roles={
 				'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
 			},
 			required_parameters={
 			},
-			reference='Product Current Price - {}'.format(product_obj.browse(vals['product_id']).name),
+			reference='Product Current Price - {}'.format(product_obj.browse(cr, uid, vals['product_id']).name),
 			context=context)
 		return result
