@@ -232,6 +232,28 @@
 	return 1 if factors['BON_ROW_COUNT'] >= 10 else 0</field>
 		</record>
 
+		<!-- Product Current Price -->
+
+		<record id="hr_point_rule_pricelist_current_sell_admin" model="hr.point.rule">
+			<field name="name">PRICELIST_CURRENT_SELL_ADMIN</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_sales')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_adm')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return 0.1</field>
+		</record>
+
+		<!-- Price List -->
+
+		<record id="hr_point_rule_pricelist_sell_admin" model="hr.point.rule">
+			<field name="name">PRICELIST_SELL_ADMIN</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_sales')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_adm')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return factors['ROW_COUNT'] * 0.1</field>
+		</record>
+
 
 
 
