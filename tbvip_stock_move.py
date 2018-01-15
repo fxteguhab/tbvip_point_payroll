@@ -21,7 +21,7 @@ class tbvip_interbranch_stock_move(osv.Model):
 					'EMP': [sm.prepare_employee_id.id],
 				},
 				required_parameters={
-					'ROW_COUNT': len(sm.interbranch_stock_move_line_ids.id),
+					'ROW_COUNT': len(sm.interbranch_stock_move_line_ids.ids),
 				},
 				reference='Interbranch Transfer - From {} - To {}'.format(
 					sm.from_stock_location_id.name,
