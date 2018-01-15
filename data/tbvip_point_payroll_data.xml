@@ -190,6 +190,20 @@
 				(6, 0, [ref('tbvip_employee_point_role_admin')])]"/>
 		</record>
 
+		<record id="hr_point_activity_supplier_payment_save" model="hr.point.activity">
+			<field name="name">SUPPLIER PAYMENT SAVE</field>
+			<field name="code">SUPPLIER_PAYMENT_SAVE</field>
+			<field name="point_employee_role_ids" eval="[
+				(6, 0, [ref('tbvip_employee_point_role_admin')])]"/>
+		</record>
+
+		<record id="hr_point_activity_supplier_payment_validate" model="hr.point.activity">
+			<field name="name">SUPPLIER PAYMENT VALIDATE</field>
+			<field name="code">SUPPLIER_PAYMENT_VALIDATE</field>
+			<field name="point_employee_role_ids" eval="[
+				(6, 0, [ref('tbvip_employee_point_role_admin')])]"/>
+		</record>
+
 		<record id="hr_point_activity_misc" model="hr.point.activity">
 			<field name="name">MISC</field>
 			<field name="code">MISC</field>
@@ -533,6 +547,8 @@
 	return 0.5 * factors['XTRA_MINUTES'] if factors['XTRA_MINUTES'] > 0 else 0</field>
 		</record>
 
+		<!--Customer Payment-->
+
 		<record id="hr_point_rule_customer_payment_admin" model="hr.point.rule">
 			<field name="name">CUSTOMER_PAYMENT_ADMIN</field>
 			<field name="point_employee_activity_id" eval="ref('hr_point_activity_customer_payment')"/>
@@ -542,6 +558,25 @@
 				return 0.2</field>
 		</record>
 
+		<!--Supplier Payment-->
+
+		<record id="hr_point_rule_supplier_kontra_admin" model="hr.point.rule">
+			<field name="name">SUPPLIER_KONTRA_ADMIN</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_supplier_payment_save')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_adm')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+				return 0.4</field>
+		</record>
+
+		<record id="hr_point_rule_supplier_payment_admin" model="hr.point.rule">
+			<field name="name">SUPPLIER_PAYMENT_ADMIN</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_supplier_payment_validate')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_adm')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+				return 0.4</field>
+		</record>
 
 	</data>
 </openerp>
