@@ -701,7 +701,7 @@
 			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
 			<field name="point_type_id" eval="ref('hr_point_type_so')"/>
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
-	return return ((factors['ROW_QTY']/24) * 0.125 + (factors['ROW_COUNT'] * 0.125))/2</field>
+	return ((factors['ROW_QTY']/24) * 0.125 + (factors['ROW_COUNT'] * 0.125))/2</field>
 		</record>
 		<record id="hr_point_rule_bonus_so_override_employee_penalty" model="hr.point.rule">
 			<field name="name">SO_OVERRIDE_EMPLOYEE_PENALTY</field>

@@ -24,7 +24,7 @@ class stock_opname_memory(osv.osv_memory):
 				break
 		# hook for point override_so
 		if context.get('is_override', False):
-			for memory in self.browse(cr, uid, ids):
+			for memory in self.browse(cr, uid, ids, context):
 				row_qty = 0
 				for line_id in memory.line_ids:
 					row_qty += line_id.product_qty
