@@ -169,7 +169,7 @@
 				(6, 0, [ref('tbvip_employee_point_role_admin')])]"/>
 		</record>
 
-		<record id="hr_point_activity_price_list" model="hr.point.activity">
+		<record id="hr_point_activity_koreksi_bon" model="hr.point.activity">
 			<field name="name">KOREKSI_BON</field>
 			<field name="code">KOREKSI_BON</field>
 			<field name="point_employee_role_ids" eval="[
