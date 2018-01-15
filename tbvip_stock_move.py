@@ -59,19 +59,20 @@ class tbvip_interbranch_stock_move_line(osv.Model):
 		# input points
 		employee_point_obj = self.pool.get('hr.point.employee.point')
 		employee_obj = self.pool.get('hr.employee')
-		for sml in self.browse(cr, uid, ids):
-			if sml.is_changed:
-				employee_point_obj.input_point(cr, uid,
-					activity_code='MODIFIED_INTERBRANCH_TRANSFER',
-					roles={
-						'ADM': [employee_obj.get_employee_id_from_user(cr, uid, sml.header_id.input_user_id.id, context=context)],
-						'EMP': [sml.header_id.prepare_employee_id.id],
-					},
-					required_parameters={
-					},
-					reference='Modified Interbranch Transfer - From {} - To {} - Product {}'.format(
-						sml.header_id.from_stock_location_id.name,
-						sml.header_id.to_stock_location_id.name,
-						sml.product_id.name),
-					context=context)
+		if not vals.get('is_changed', False):
+			for sml in self.browse(cr, uid, ids):
+				if sml.is_changed:
+					employee_point_obj.input_point(cr, uid,
+						activity_code='MODIFIED_INTERBRANCH_TRANSFER',
+						roles={
+							'ADM': [employee_obj.get_employee_id_from_user(cr, uid, sml.header_id.input_user_id.id, context=context)],
+							'EMP': [sml.header_id.prepare_employee_id.id],
+						},
+						required_parameters={
+						},
+						reference='Modified Interbranch Transfer - From {} - To {} - Product {}'.format(
+							sml.header_id.from_stock_location_id.name,
+							sml.header_id.to_stock_location_id.name,
+							sml.product_id.name),
+						context=context)
 		return result
