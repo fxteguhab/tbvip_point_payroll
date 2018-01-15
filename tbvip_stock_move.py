@@ -29,7 +29,7 @@ class tbvip_interbranch_stock_move(osv.Model):
 		return result
 	
 	def action_accept(self, cr, uid, ids, context=None):
-		result = self.action_accept(cr, uid, ids)
+		result = super(tbvip_interbranch_stock_move, self).action_accept(cr, uid, ids)
 		# input points
 		employee_point_obj = self.pool.get('hr.point.employee.point')
 		employee_obj = self.pool.get('hr.employee')
