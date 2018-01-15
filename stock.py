@@ -62,13 +62,15 @@ class stock_bonus_usage(osv.osv):
 	
 	def action_approve(self, cr, uid, ids, context=None):
 		result = super(stock_bonus_usage, self).action_approve(cr, uid, ids, context)
-		for bonus_usage in self.browse(ids):
+		for bonus_usage in self.browse(cr, uid, ids, context=context):
 			self.pool.get('hr.point.employee.point').input_point(cr, uid,
 				activity_code='BONUS_PRODUCT_USAGE',
 				roles={
 					'ADM': [uid],
 				},
-				required_parameters={},
+				required_parameters={
+					'ROW_COUNT': len(bonus_usage.bonus_usage_line_ids),
+				},
 				reference='Approve Bonus Usage - {}'.format(bonus_usage.name),
 				context=context)
 		return result
