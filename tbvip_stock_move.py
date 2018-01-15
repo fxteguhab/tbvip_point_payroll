@@ -64,11 +64,10 @@ class tbvip_interbranch_stock_move_line(osv.Model):
 				employee_point_obj.input_point(cr, uid,
 					activity_code='MODIFIED_INTERBRANCH_TRANSFER',
 					roles={
-						'ADM': [employee_obj.get_employee_id_from_user(cr, uid, vals['input_user_id'], context=context)],
-						'EMP': [vals['prepare_employee_id']],
+						'ADM': [employee_obj.get_employee_id_from_user(cr, uid, sml.header_id.input_user_id.id, context=context)],
+						'EMP': [sml.header_id.prepare_employee_id.id],
 					},
 					required_parameters={
-						'ROW_COUNT': len(vals['interbranch_stock_move_line_ids']),
 					},
 					reference='Modified Interbranch Transfer - From {} - To {} - Product {}'.format(
 						sml.header_id.from_stock_location_id.name,
