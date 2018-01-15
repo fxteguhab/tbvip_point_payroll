@@ -1,5 +1,6 @@
 <openerp>
 	<data>
+		<!--Time Cron 12 am-->
 		<record forcecreate="True" id="ir_cron_generate_top_point" model="ir.cron">
 			<field name="name">Generate Top Point</field>
 			<field eval="True" name="active" />

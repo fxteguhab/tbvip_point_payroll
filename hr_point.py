@@ -39,7 +39,7 @@ class hr_point_type(osv.Model):
 		}, context=context)
 
 class hr_point_employee_point(osv.Model):
-	_name = 'hr.point.employee.point'
+	_inherit = 'hr.point.employee.point'
 	
 	def cron_generate_top_point(self, cr, uid, context={}):
 		branch_obj = self.pool.get('tbvip.branch')
@@ -94,4 +94,3 @@ class hr_point_employee_point(osv.Model):
 					'reference': 'CRON - Generate Top Point',
 				}
 				new_id = self.create(cr, uid, employee_point_vals, context)
-				print 'ID: ' + new_id
