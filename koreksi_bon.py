@@ -6,7 +6,7 @@ class koreksi_bon(osv.osv_memory):
 	_inherit = 'koreksi.bon'
 	
 	def action_save_koreksi_bon(self, cr, uid, ids, context=None):
-		result = self.action_save_koreksi_bon(cr, uid, ids, context=context)
+		result = super(koreksi_bon, self).action_save_koreksi_bon(cr, uid, ids, context=context)
 		employee_point_obj = self.pool.get('hr.point.employee.point')
 		employee_obj = self.pool.get('hr.employee')
 		for kb in self.browse(cr, uid, ids):

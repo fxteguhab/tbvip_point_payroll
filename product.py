@@ -2,11 +2,11 @@ from openerp.osv import osv, fields
 
 # ==========================================================================================================================
 
-class purchase_order(osv.osv):
+class product_product(osv.osv):
 	_inherit = 'product.product'
 	
 	def create(self, cr, uid, vals, context=None):
-		result = super(purchase_order, self).create(cr, uid, vals, context)
+		result = super(product_product, self).create(cr, uid, vals, context)
 		# input points
 		employee_point_obj = self.pool.get('hr.point.employee.point')
 		employee_obj = self.pool.get('hr.employee')

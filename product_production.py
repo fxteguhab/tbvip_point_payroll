@@ -4,7 +4,7 @@ class product_production(osv.osv):
 	_inherit = "product.production"
 
 	def action_finish(self, cr, uid, ids, context=None):
-		result = self.action_finish(cr, uid, ids, context=context)
+		result = super(product_production, self).action_finish(cr, uid, ids, context=context)
 		# input points
 		employee_point_obj = self.pool.get('hr.point.employee.point')
 		employee_obj = self.pool.get('hr.employee')
