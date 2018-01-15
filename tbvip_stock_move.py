@@ -52,7 +52,7 @@ class tbvip_interbranch_stock_move(osv.Model):
 # ==========================================================================================================================
 
 class tbvip_interbranch_stock_move_line(osv.Model):
-	_name = 'tbvip.interbranch.stock.move.line'
+	_inherit = 'tbvip.interbranch.stock.move.line'
 	
 	def write(self, cr, uid, ids, vals, context=None):
 		result = super(tbvip_interbranch_stock_move_line, self).write(cr, uid, ids, vals, context=context)
