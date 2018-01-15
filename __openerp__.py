@@ -13,6 +13,7 @@
 	],
 	'sequence': 150,
 	'data': [
+		'cron/tbvip_point_payroll_cron.xml',
 		'menu/tbvip_point_payroll_menu.xml',
 		'views/fleet_view.xml',
 		'views/tbvip_point_payroll.xml',
