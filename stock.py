@@ -55,3 +55,20 @@ class stock_inventory(osv.osv):
 				reference='Stock Opname - {}'.format(inventory.name),
 				context=context)
 		return result
+
+
+class stock_bonus_usage(osv.osv):
+	_inherit = 'stock.bonus.usage'
+	
+	def action_approve(self, cr, uid, ids, context=None):
+		result = super(stock_bonus_usage, self).action_approve(cr, uid, ids, context)
+		for bonus_usage in self.browse(ids):
+			self.pool.get('hr.point.employee.point').input_point(cr, uid,
+				activity_code='BONUS_PRODUCT_USAGE',
+				roles={
+					'ADM': [uid],
+				},
+				required_parameters={},
+				reference='Approve Bonus Usage - {}'.format(bonus_usage.name),
+				context=context)
+		return result

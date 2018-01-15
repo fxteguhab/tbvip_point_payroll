@@ -148,6 +148,13 @@
 				(6, 0, [ref('tbvip_employee_point_role_admin'), ref('tbvip_employee_point_role_employee')])]"/>
 		</record>
 
+		<record id="hr_point_activity_bon_book" model="hr.point.activity">
+			<field name="name">BON_BOOK</field>
+			<field name="code">BON_BOOK</field>
+			<field name="point_employee_role_ids" eval="[
+				(6, 0, [ref('tbvip_employee_point_role_admin')])]"/>
+		</record>
+
 		<record id="hr_point_activity_sales_product_current_price" model="hr.point.activity">
 			<field name="name">SALES_PRODUCT_CURRENT_PRICE</field>
 			<field name="code">SALES_PRODUCT_CURRENT_PRICE</field>
@@ -162,7 +169,7 @@
 				(6, 0, [ref('tbvip_employee_point_role_admin')])]"/>
 		</record>
 
-		<record id="hr_point_activity_price_list" model="hr.point.activity">
+		<record id="hr_point_activity_koreksi_bon" model="hr.point.activity">
 			<field name="name">KOREKSI_BON</field>
 			<field name="code">KOREKSI_BON</field>
 			<field name="point_employee_role_ids" eval="[
@@ -225,7 +232,40 @@
 				(6, 0, [ref('tbvip_employee_point_role_employee')])]"/>
 		</record>
 
+		<record id="hr_point_activity_direct_production" model="hr.point.activity">
+			<field name="name">DIRECT_PRODUCTION</field>
+			<field name="code">DIRECT_PRODUCTION</field>
+			<field name="point_employee_role_ids" eval="[
+				(6, 0, [ref('tbvip_employee_point_role_admin')])]"/>
+		</record>
 
+		<record id="hr_point_activity_interbranch_transfer" model="hr.point.activity">
+			<field name="name">INTERBRANCH_TRANSFER</field>
+			<field name="code">INTERBRANCH_TRANSFER</field>
+			<field name="point_employee_role_ids" eval="[
+				(6, 0, [ref('tbvip_employee_point_role_admin'), ref('tbvip_employee_point_role_employee')])]"/>
+		</record>
+
+		<record id="hr_point_activity_modified_interbranch_transfer" model="hr.point.activity">
+			<field name="name">MODIFIED_INTERBRANCH_TRANSFER</field>
+			<field name="code">MODIFIED_INTERBRANCH_TRANSFER</field>
+			<field name="point_employee_role_ids" eval="[
+				(6, 0, [ref('tbvip_employee_point_role_admin'), ref('tbvip_employee_point_role_employee')])]"/>
+		</record>
+
+		<record id="hr_point_activity_bonus_product_usage" model="hr.point.activity">
+			<field name="name">BONUS_PRODUCT_USAGE</field>
+			<field name="code">BONUS_PRODUCT_USAGE</field>
+			<field name="point_employee_role_ids" eval="[
+				(6, 0, [ref('tbvip_employee_point_role_admin')])]"/>
+		</record>
+
+		<record id="hr_point_activity_override_stock_opname" model="hr.point.activity">
+			<field name="name">OVERRIDE_STOCK_OPNAME</field>
+			<field name="code">OVERRIDE_STOCK_OPNAME</field>
+			<field name="point_employee_role_ids" eval="[
+				(6, 0, [ref('tbvip_employee_point_role_admin'), ref('tbvip_employee_point_role_employee_branch'), ref('tbvip_employee_point_role_employee_all')])]"/>
+		</record>
 
 		<!-- POINT RULES -->
 
@@ -524,6 +564,74 @@
 	return penalty_point</field>
 		</record>
 
+		<!-- Direct Production -->
+
+		<record id="hr_point_rule_direct_production_admin" model="hr.point.rule">
+			<field name="name">DIRECT_PRODUCTION_ADMIN</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_direct_production')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_adm')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return 0.2</field>
+		</record>
+
+		<!-- Interbranch Transfer -->
+
+		<record id="hr_point_rule_interbranch_sender_admin" model="hr.point.rule">
+			<field name="name">INTERBRANCH_SENDER_ADMIN</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_interbranch_transfer')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_adm')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return 0.4</field>
+		</record>
+
+		<record id="hr_point_rule_interbranch_receiver_admin" model="hr.point.rule">
+			<field name="name">INTERBRANCH_RECEIVER_ADMIN</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_interbranch_transfer')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_adm')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return 0.4</field>
+		</record>
+
+		<record id="hr_point_rule_interbranch_sender_employee" model="hr.point.rule">
+			<field name="name">INTERBRANCH_SENDER_EMPLOYEE</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_interbranch_transfer')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_employee')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_xtra')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return (factors['ROW_COUNT'] * 1) + 5</field>
+		</record>
+
+		<record id="hr_point_rule_interbranch_receiver_employee" model="hr.point.rule">
+			<field name="name">INTERBRANCH_RECEIVER_EMPLOYEE</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_interbranch_transfer')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_employee')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_xtra')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return (factors['ROW_COUNT'] * 1) + 5</field>
+		</record>
+
+		<!-- Modified Interbranch Transfer -->
+
+		<record id="hr_point_rule_interbranch_sender_penalty_admin" model="hr.point.rule">
+			<field name="name">INTERBRANCH_SENDER_PENALTY_ADMIN</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_modified_interbranch_transfer')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_penalty')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return 0.5</field>
+		</record>
+
+		<record id="hr_point_rule_interbranch_sender_penalty_employee" model="hr.point.rule">
+			<field name="name">INTERBRANCH_SENDER_PENALTY_ADMIN</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_modified_interbranch_transfer')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_employee')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_penalty')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return 1</field>
+		</record>
 
 		<!-- HR -->
 
@@ -576,6 +684,63 @@
 			<field name="point_type_id" eval="ref('hr_point_type_adm')"/>
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
 				return 0.4</field>
+		</record>
+
+		<record id="hr_point_rule_bonus_product_admin" model="hr.point.rule">
+			<field name="name">BONUS_PRODUCT_ADMIN</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_bonus_product_usage')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_adm')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return (factors['ROW_COUNT'] * 0)</field>
+		</record>
+
+		<record id="hr_point_rule_bonus_so_override_admin" model="hr.point.rule">
+			<field name="name">SO_OVERRIDE_ADMIN</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_override_stock_opname')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_so')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return return ((factors['ROW_QTY']/24) * 0.125 + (factors['ROW_COUNT'] * 0.125))/2</field>
+		</record>
+		<record id="hr_point_rule_bonus_so_override_employee_penalty" model="hr.point.rule">
+			<field name="name">SO_OVERRIDE_EMPLOYEE_PENALTY</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_override_stock_opname')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_employee_branch')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_penalty')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	# variables
+	# limit_delta = 100
+	# default == 10%
+	# penalty_value = 0.1
+	#default 0.1
+	#
+	# factors
+	# old = factors['OLD_QTY']
+	# new = factors['NEW_QTY']
+	# delta = abs(old-new)
+	# max_qty = max(old,new)
+	penalty_point = 0
+	#
+	# rule
+	# if max_qty != 0:
+	# percentage = (delta/max_qty) * 100
+	# if percentage > limit_delta:
+	# coeff = int(percentage / limit_delta)
+	# penalty_total = coeff * penalty_value
+	# if factors['EMPLOYEE_BRANCH_COUNT'] != 0:
+	# penalty_point = penalty_total / factors['EMPLOYEE_BRANCH_COUNT']
+	# else:
+	# penalty_point = penalty_total
+	return penalty_point</field>
+		</record>
+		<record id="hr_point_rule_so_override_employee" model="hr.point.rule">
+			<field name="name">SO_OVERRIDE_EMPLOYEE</field>
+			<field name="point_employee_activity_id" eval="ref('hr_point_activity_override_stock_opname')"/>
+			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_employee_all')"/>
+			<field name="point_type_id" eval="ref('hr_point_type_so')"/>
+			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
+	return ((factors['ROW_QTY']/12) * 01.25 + (factors['ROW_COUNT'] * 0.125) )</field>
 		</record>
 
 	</data>
