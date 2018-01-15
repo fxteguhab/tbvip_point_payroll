@@ -14,7 +14,7 @@ class exception_working_hour(osv.osv):
 	# DEFAULTS --------------------------------------------------------------------------------------------------------------
 	
 	_defaults = {
-		'branch_id': lambda self, cr, uid, *args: self.pool.get('res.users').browse(cr, uid, [uid]).branch_id,
+		'branch_id': lambda self, cr, uid, *args: self.pool.get('res.users').browse(cr, uid, [uid]).branch_id.id,
 	}
 	
 	# ONCHANGES --------------------------------------------------------------------------------------------------------------
