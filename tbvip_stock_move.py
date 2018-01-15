@@ -65,7 +65,7 @@ class tbvip_interbranch_stock_move_line(osv.Model):
 					activity_code='MODIFIED_INTERBRANCH_TRANSFER',
 					roles={
 						'ADM': [employee_obj.get_employee_id_from_user(cr, uid, vals['input_user_id'], context=context)],
-						'EMP': vals['prepare_employee_id'],
+						'EMP': [vals['prepare_employee_id']],
 					},
 					required_parameters={
 						'ROW_COUNT': len(vals['interbranch_stock_move_line_ids']),
