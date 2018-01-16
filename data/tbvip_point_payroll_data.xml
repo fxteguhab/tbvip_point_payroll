@@ -670,7 +670,7 @@
 			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
 			<field name="point_type_id" eval="ref('hr_point_type_adm')"/>
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
-				return 0.2</field>
+	return 0.2</field>
 		</record>
 
 		<!--Supplier Payment-->
@@ -681,7 +681,7 @@
 			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
 			<field name="point_type_id" eval="ref('hr_point_type_adm')"/>
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
-				return 0.4</field>
+	return 0.4</field>
 		</record>
 
 		<record id="hr_point_rule_supplier_payment_admin" model="hr.point.rule">
@@ -690,7 +690,7 @@
 			<field name="point_employee_role_id" eval="ref('tbvip_employee_point_role_admin')"/>
 			<field name="point_type_id" eval="ref('hr_point_type_adm')"/>
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
-				return 0.4</field>
+	return 0.4</field>
 		</record>
 
 		<record id="hr_point_rule_bonus_product_admin" model="hr.point.rule">
