@@ -54,7 +54,7 @@ class hr_attendance(osv.osv):
 				},
 				required_parameters={
 					'LATE_MINUTES': late_minutes,
-					'OVERTIME_MINUTES': 0,
+					'XTRA_MINUTES': 0,
 				},
 				reference='Attendance Late - {}'.format(date),
 				context=context)
