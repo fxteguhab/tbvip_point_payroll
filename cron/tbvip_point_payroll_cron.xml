@@ -13,5 +13,20 @@
 			<field eval="'cron_generate_top_point'" name="function" />
 			<field eval="" name="args" />
 		</record>
+
+
+		<!--Time Cron 12 am-->
+		<record forcecreate="True" id="ir_cron_generate_overtime_and_late_attendance_point" model="ir.cron">
+			<field name="name">Generate Overtime and Late Attendance Point</field>
+			<field eval="True" name="active" />
+			<field name="user_id" ref="base.user_root" />
+			<field name="interval_number">1</field>
+			<field name="interval_type">days</field>
+			<field name="numbercall">-1</field>
+			<field name="active">1</field>
+			<field eval="'hr.point.employee.point'" name="model" />
+			<field eval="'cron_overtime_and_late_attendance_point'" name="function" />
+			<field eval="" name="args" />
+		</record>
 	</data>
 </openerp>

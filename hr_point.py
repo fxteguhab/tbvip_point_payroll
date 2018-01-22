@@ -1,5 +1,8 @@
 from openerp.osv import osv
 from datetime import datetime, timedelta
+from openerp import SUPERUSER_ID
+import pytz
+from openerp.tools.translate import _
 
 
 class hr_point_type(osv.Model):
@@ -94,3 +97,152 @@ class hr_point_employee_point(osv.Model):
 					'reference': 'CRON - Generate Top Point',
 				}
 				new_id = self.create(cr, uid, employee_point_vals, context)
+	
+	def cron_overtime_and_late_attendance_point(self, cr, uid, context={}):
+		attendance_obj = self.pool.get('hr.attendance')
+		employee_obj = self.pool.get('hr.employee')
+		contract_obj = self.pool.get('hr.contract')
+		hr_payslip_obj = self.pool.get('hr.payslip')
+		exception_working_hour_obj = self.pool.get('exception.working.hour')
+		attendance_config_settings_obj = self.pool.get('attendance.config.settings')
+		
+		# adjusting to timezone
+		if context and context.get('tz', False):
+			tz = context['tz']
+		else:
+			user_pool = self.pool.get('res.users')
+			user = user_pool.browse(cr, SUPERUSER_ID, uid)
+			tz = (pytz.timezone(user.partner_id.tz)).zone if user.partner_id.tz else pytz.utc.zone
+		
+		datetime_now = datetime.now()
+		now_from = datetime_now.strftime('%Y-%m-%d 00:00:00')
+		now_to = datetime_now.strftime('%Y-%m-%d 23:59:59')
+
+		employee_ids = employee_obj.search(cr, uid, [], context=context)
+		for employee in employee_obj.browse(cr, uid, employee_ids, context=context):
+			contract_ids = hr_payslip_obj.get_contract(cr, uid, employee, now_from, now_to, context=context)
+			if contract_ids and len(contract_ids) > 0:
+				contract_id = contract_ids[0]
+			else:
+				raise osv.except_osv(_('Error!'), _("This employee does not have any contract for the range of time."))
+				
+			# get attendances
+			working_hours = contract_obj.browse(cr, uid, contract_id).working_hours
+			attendances = attendance_obj.search(cr, uid, [
+				('employee_id', '>=', employee.id),
+				('name', '>=', now_from),
+				('name', '<=', now_to),
+			], order='name ASC')
+			
+			# get attendance settings
+			start_tolerance_after, finish_tolerance_before, early_overtime_start, early_overtime_finish, late_overtime_start, late_overtime_finish = \
+				attendance_config_settings_obj.get_attendance_setting(cr, uid, context)
+			tolerable_opening_datetime = False
+			tolerable_closing_datetime = False
+			early_overtime_init = False
+			early_overtime_end = False
+			late_overtime_init = False
+			late_overtime_end = False
+			
+			list_of_day = []
+			# total counter all time
+			total_early_overtime = 0
+			total_late_overtime = 0
+			total_early_late = 0
+			total_late_late = 0
+			first_sign_in_of_the_date = False
+			last_sign_out_of_the_date = False
+			
+			for attendance in attendance_obj.browse(cr, uid, attendances):
+				attendance_date = datetime.strptime(attendance.name, '%Y-%m-%d %H:%M:%S')
+				attendance_date = pytz.utc.localize(attendance_date, is_dst=None).astimezone(pytz.timezone(tz))
+				attendance_date = datetime.strptime(attendance_date.strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
+				
+				# set variables
+				hour_from = False
+				minute_from = False
+				hour_to = False
+				minute_to = False
+				
+				# search for custom working hour from Branch Working Hours if any
+				custom_exception_working_hour_ids = exception_working_hour_obj.get_working_hour_ids(
+					cr, uid, attendance_date.strftime('%Y-%m-%d %H:%M:%S'), limit=1, context=context)
+				# if there's custom working hour
+				if custom_exception_working_hour_ids and len(custom_exception_working_hour_ids) > 0:
+					exception_working_hour = exception_working_hour_obj.browse(cr, uid, custom_exception_working_hour_ids[0], context=context)
+					hour_from = int(exception_working_hour.open_hour)
+					minute_from = (exception_working_hour.open_hour-hour_from) * 60
+					hour_to = int(exception_working_hour.closed_hour)
+					minute_to = (exception_working_hour.closed_hour-hour_from) * 60
+				# if no custom
+				else:
+					# search working hour for attendance day_of_week
+					day_of_week = int(attendance_date.strftime("%w"))-1
+					for working_hour in working_hours.attendance_ids:
+						if int(working_hour.dayofweek) == day_of_week:
+							hour_from = int(working_hour.hour_from)
+							minute_from = (working_hour.hour_from-hour_from) * 60
+							hour_to = int(working_hour.hour_to)
+							minute_to = (working_hour.hour_to-hour_to) * 60
+							break
+				if hour_from is not False and minute_from is not False and hour_to is not False and minute_to is not False:
+					# if the attendance is signing in
+					if attendance.action == 'sign_in':
+						# sign in and out can be done more than once in a day, so check whether the day has been counted before
+						in_date = attendance_date.strftime('%Y-%m-%d')
+						if in_date not in list_of_day:
+							# overtime and late
+							cur_total_early_overtime, cur_total_late_overtime, cur_total_early_late, cur_total_late_late = \
+								hr_payslip_obj.get_late_and_overtime(first_sign_in_of_the_date, last_sign_out_of_the_date,
+									tolerable_opening_datetime, tolerable_closing_datetime, early_overtime_init,
+									early_overtime_end, late_overtime_init, late_overtime_end, context=context)
+							total_early_overtime += cur_total_early_overtime
+							total_late_overtime += cur_total_late_overtime
+							total_early_late += cur_total_early_late
+							total_late_late += cur_total_late_late
+							if first_sign_in_of_the_date and last_sign_out_of_the_date:
+								pass
+								# not gonna happen like in _get_worked_days_inject_data method,
+								# because the range datetime is only for today
+							
+							# PROCESS NEW DATE
+							list_of_day.append(in_date)
+							first_sign_in_of_the_date = attendance_date
+							last_sign_out_of_the_date = False
+							
+							# Get opening, closing, overtime datetime rules
+							# new datetimes
+							datetime_from = datetime(year=attendance_date.year, month=attendance_date.month, day=attendance_date.day,
+								hour=int(hour_from), minute=int(minute_from))
+							datetime_to = datetime(year=attendance_date.year, month=attendance_date.month, day=attendance_date.day,
+								hour=int(hour_to), minute=int(minute_to))
+							tolerable_opening_datetime = datetime_from + timedelta(minutes=start_tolerance_after)
+							tolerable_closing_datetime = datetime_to + timedelta(minutes=-finish_tolerance_before)
+							early_overtime_init = datetime_from + timedelta(minutes=-early_overtime_start)
+							early_overtime_end = datetime_from + timedelta(minutes=-early_overtime_finish)
+							late_overtime_init = datetime_to + timedelta(minutes=late_overtime_start)
+							late_overtime_end = datetime_to + timedelta(minutes=late_overtime_finish)
+					# if the attendance is signing out
+					elif attendance.action == 'sign_out':
+						last_sign_out_of_the_date = attendance_date
+			# last date not calculated yet
+			cur_total_early_overtime, cur_total_late_overtime, cur_total_early_late, cur_total_late_late = \
+				hr_payslip_obj.get_late_and_overtime(first_sign_in_of_the_date, last_sign_out_of_the_date,
+					tolerable_opening_datetime, tolerable_closing_datetime, early_overtime_init,
+					early_overtime_end, late_overtime_init, late_overtime_end, context=context)
+			total_early_overtime += cur_total_early_overtime
+			total_late_overtime += cur_total_late_overtime
+			total_early_late += cur_total_early_late
+			total_late_late += cur_total_late_late
+			if first_sign_in_of_the_date and last_sign_out_of_the_date:
+				date_obj = {
+					'date': first_sign_in_of_the_date.strftime('%Y-%m-%d'),
+					'early_overtime': cur_total_early_overtime,
+					'late_overtime': cur_total_late_overtime,
+					'late': cur_total_early_late,
+					'early_leave': cur_total_late_late,
+				}
+				attendance_obj.late_attendance(cr, uid, [employee.id],
+					date_obj['late'] + date_obj['early_leave'], date_obj['date'], context=context)
+				attendance_obj.overtime_attendance(cr, uid, [employee.id],
+					date_obj['early_overtime'] + date_obj['late_overtime'], date_obj['date'], context=context)
