@@ -1,5 +1,5 @@
 from openerp.osv import osv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from openerp import SUPERUSER_ID
 import pytz
 from openerp.tools.translate import _
@@ -124,7 +124,7 @@ class hr_point_employee_point(osv.Model):
 			if contract_ids and len(contract_ids) > 0:
 				contract_id = contract_ids[0]
 			else:
-				raise osv.except_osv(_('Error!'), _("This employee does not have any contract for the range of time."))
+				continue
 				
 			# get attendances
 			working_hours = contract_obj.browse(cr, uid, contract_id).working_hours
