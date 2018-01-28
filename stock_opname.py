@@ -12,6 +12,7 @@ class stock_opname_memory(osv.osv_memory):
 	}
 	
 	def action_generate_stock_opname(self, cr, uid, ids, context=None):
+		employee_obj = self.pool.get('hr.employee')
 		result = super(stock_opname_memory, self).action_generate_stock_opname(cr, uid, ids, context=context)
 		if result and result.get('res_id', False):
 			stock_inventory_obj = self.pool.get('stock.inventory')
@@ -31,8 +32,8 @@ class stock_opname_memory(osv.osv_memory):
 				self.pool.get('hr.point.employee.point').input_point(cr, uid,
 					activity_code='OVERRIDE_STOCK_OPNAME',
 					roles={
-						'ADM': [uid],
-						'EMPBRC': [uid],
+						'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
+						'EMPBRC': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
 						'EMPALL': [memory.employee_id.id],
 					},
 					required_parameters={
