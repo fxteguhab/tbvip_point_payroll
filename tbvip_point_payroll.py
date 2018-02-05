@@ -70,6 +70,7 @@ class tbvip_additional_activity_log(osv.osv):
 		'activity_time': fields.datetime('Time', required=True),
 		'additional_activity_id': fields.many2one('tbvip.additional.activity', 'Activity', required=True),
 		'employee_point_id': fields.many2one('hr.point.employee.point', 'Employee Point', ondelete='set null'),
+		'description': fields.text('Description'),
 	}
 	
 # DEFAULTS ------------------------------------------------------------------------------------------------------------------
