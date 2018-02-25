@@ -129,7 +129,7 @@ class hr_point_employee_point(osv.Model):
 			# get attendances
 			working_hours = contract_obj.browse(cr, uid, contract_id).working_hours
 			attendances = attendance_obj.search(cr, uid, [
-				('employee_id', '>=', employee.id),
+				('employee_id', '=', employee.id),
 				('name', '>=', now_from),
 				('name', '<=', now_to),
 			], order='name ASC')
