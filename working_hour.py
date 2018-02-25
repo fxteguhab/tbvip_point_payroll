@@ -52,4 +52,4 @@ class exception_working_hour(osv.osv):
 				('date', '=', date)
 			], limit=limit, context=context)
 		else:
-			super(exception_working_hour, self).get_working_hour_ids(cr, uid, date, limit, context)
+			return super(exception_working_hour, self).get_working_hour_ids(cr, uid, date, limit, context)

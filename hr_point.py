@@ -99,6 +99,113 @@ class hr_point_employee_point(osv.Model):
 				new_id = self.create(cr, uid, employee_point_vals, context)
 	
 	def cron_overtime_and_late_attendance_point(self, cr, uid, context={}):
+
+	# versi juned, 20180212
+
+		employee_obj = self.pool.get('hr.employee')
+		payslip_obj = self.pool.get('hr.payslip')
+		attendance_config_settings_obj = self.pool.get('attendance.config.settings')
+		attendance_obj = self.pool.get('hr.attendance')
+
+		#date_now = datetime.now() careful, debugging only
+		date_now = datetime.now().replace(hour=0, minute=0, second=0)
+		date_from = date_now - timedelta(hours=7)
+		date_from = date_from.strftime("%Y-%m-%d")
+		date_to = date_now + timedelta(hours=24) - timedelta(hours=7) - timedelta(seconds=1)
+		date_to = date_to.strftime("%Y-%m-%d")
+
+	# get attendance settings
+		start_tolerance_after, finish_tolerance_before, early_overtime_start, early_overtime_finish, late_overtime_start, late_overtime_finish = \
+			attendance_config_settings_obj.get_attendance_setting(cr, uid, context=context)
+
+		"""
+		print start_tolerance_after
+		print finish_tolerance_before
+		print early_overtime_start
+		print early_overtime_finish
+		print late_overtime_start
+		print late_overtime_finish
+		"""
+
+	# for each existing employee...
+		employee_ids = employee_obj.search(cr, uid, [], context=context)
+		for employee in employee_obj.browse(cr, uid, employee_ids, context=context):
+			print employee.name
+		# get currently active contract
+			contract_ids = payslip_obj.get_contract(cr, uid, employee, date_from, date_to, context=context)
+		# no contract? pass this employee
+			if not (contract_ids and len(contract_ids) > 0): continue
+		# get the employee's attendance for this date
+			contract_id = contract_ids[0]
+			attendance_by_date = payslip_obj.get_attendance_by_date(cr, uid, employee.id, date_from, date_to, contract_id, context=context)
+		# complete attendance_by_date with information about late and early
+			for day in attendance_by_date:
+			# no atteendance today? skip this employee
+				if not attendance_by_date[day]['sign_in']: continue
+				attendance_by_date[day].update({
+					'early_start': 0,
+					'late_start': 0,
+					'early_leave': 0,
+					'late_leave': 0,
+					})
+			# convert sign in hour/minute/second into minutes, rounding the second
+				sign_in_minutes = attendance_by_date[day]['sign_in'].hour * 60 + attendance_by_date[day]['sign_in'].minute
+				if attendance_by_date[day]['sign_in'].second >= 30: sign_in_minutes += 1
+			# how many minutes this employee is late for this day?
+				start_with_tolerance = attendance_by_date[day]['start'] * 60 + start_tolerance_after
+				late_start = max(0, sign_in_minutes - start_with_tolerance)
+			# if late more than 30 minutes, no penalty but considered not full day
+				if late_start > 30: late_start = 0 # sori guh si 30 sementara hardcode
+				attendance_by_date[day]['late_start'] = int(late_start)
+			# how many minutes this employee comes early?
+				early_from = attendance_by_date[day]['start'] * 60 - early_overtime_start
+				early_to = attendance_by_date[day]['start'] * 60 - early_overtime_finish
+				early_start = 0
+				if sign_in_minutes >= early_from and sign_in_minutes < early_to:
+					early_start = early_to - sign_in_minutes
+				elif sign_in_minutes < early_from:
+					early_start = early_to - early_from
+				attendance_by_date[day]['early_start'] = early_start
+			# only if employee signs out
+				if attendance_by_date[day]['sign_out']:
+				# convert sign out hour/minute/second into minutes, rounding the second
+					sign_out_minutes = attendance_by_date[day]['sign_out'].hour * 60 + attendance_by_date[day]['sign_out'].minute
+					if attendance_by_date[day]['sign_out'].second >= 30: sign_out_minutes += 1
+				# how many minutes this employee leaves early?
+					finish_with_tolerance = attendance_by_date[day]['finish'] * 60 - finish_tolerance_before
+					early_leave = max(0, finish_with_tolerance - sign_out_minutes)
+				# if early leave more than 30 minutes, no penalty but considered not full day
+					if early_leave > 30: early_leave = 0 # sori guh si 30 sementara hardcode
+					attendance_by_date[day]['early_leave'] = early_leave
+				# how many minutes this employee stays late after store close?
+					overtime_from = attendance_by_date[day]['finish'] * 60 + late_overtime_start
+					overtime_to = attendance_by_date[day]['finish'] * 60 + late_overtime_finish
+					overtime_leave = 0
+					if sign_out_minutes > overtime_from and sign_out_minutes <= overtime_to:
+						overtime_leave = sign_out_minutes - overtime_from
+					elif sign_out_minutes > overtime_to:
+						overtime_leave = overtime_to - overtime_from
+					attendance_by_date[day]['overtime_leave'] = overtime_leave
+
+			"""
+			for day in attendance_by_date:
+				print day
+				print "in: %s - out: %s" % (attendance_by_date[day]['sign_in'],attendance_by_date[day]['sign_out'])
+				print "start late: %s - start early: %s" % (attendance_by_date[day]['late_start'],attendance_by_date[day]['early_start'])
+				print "finish early: %s - finish overtime: %s" % (attendance_by_date[day]['early_leave'],attendance_by_date[day]['overtime_leave'])
+				print "=================================================================="
+			"""
+
+			for day in attendance_by_date:
+				data = attendance_by_date[day]
+				attendance_obj.late_attendance(cr, uid, [employee.id],
+					data['late_start'] + data['early_leave'], day, context=context)
+				attendance_obj.overtime_attendance(cr, uid, [employee.id],
+					data['early_start'] + data['overtime_leave'], day, context=context)
+
+
+		"""
+		yang di bawah ini adalah versi nibble as of 20180212
 		attendance_obj = self.pool.get('hr.attendance')
 		employee_obj = self.pool.get('hr.employee')
 		contract_obj = self.pool.get('hr.contract')
@@ -114,7 +221,8 @@ class hr_point_employee_point(osv.Model):
 			user = user_pool.browse(cr, SUPERUSER_ID, uid)
 			tz = (pytz.timezone(user.partner_id.tz)).zone if user.partner_id.tz else pytz.utc.zone
 		
-		datetime_now = datetime.now()
+		#datetime_now = datetime.now() careful, debugging only
+		datetime_now = datetime.strptime('2018-02-20 01:01:01','%Y-%m-%d %H:%M:%S')
 		now_from = datetime_now.strftime('%Y-%m-%d 00:00:00')
 		now_to = datetime_now.strftime('%Y-%m-%d 23:59:59')
 
@@ -129,7 +237,7 @@ class hr_point_employee_point(osv.Model):
 			# get attendances
 			working_hours = contract_obj.browse(cr, uid, contract_id).working_hours
 			attendances = attendance_obj.search(cr, uid, [
-				('employee_id', '>=', employee.id),
+				('employee_id', '=', employee.id),
 				('name', '>=', now_from),
 				('name', '<=', now_to),
 			], order='name ASC')
@@ -246,3 +354,4 @@ class hr_point_employee_point(osv.Model):
 					date_obj['late'] + date_obj['early_leave'], date_obj['date'], context=context)
 				attendance_obj.overtime_attendance(cr, uid, [employee.id],
 					date_obj['early_overtime'] + date_obj['late_overtime'], date_obj['date'], context=context)
+		"""
