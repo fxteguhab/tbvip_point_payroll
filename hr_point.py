@@ -147,9 +147,9 @@ class hr_point_employee_point(osv.Model):
 
 		#date_now = datetime(2018,02,20,23,59,00)
 		date_now = datetime.now().replace(hour=0, minute=0, second=0)
-		date_from = date_now - timedelta(hours=7)
+		date_from = date_now
 		date_from = date_from.strftime("%Y-%m-%d")
-		date_to = date_now + timedelta(hours=24) - timedelta(hours=7) - timedelta(seconds=1)
+		date_to = date_now + timedelta(hours=24)
 		date_to = date_to.strftime("%Y-%m-%d")
 
 	# get attendance settings
