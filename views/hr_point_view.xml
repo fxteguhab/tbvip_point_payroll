@@ -1,6 +1,8 @@
 <openerp>
 	<data>
 
+<!-- POINT TYPE -->
+
 		<record id="hr_point_type_form_inherit" model="ir.ui.view">
 			<field name="name">hr.point.type.form.inherit</field>
 			<field name="model">hr.point.type</field>
@@ -14,6 +16,51 @@
 				</group>
 			</field>
 		</record>
+
+<!-- TOP POINT RESET LOG -->
+
+		<record id="hr_point_top_reset_log_form" model="ir.ui.view">
+			<field name="name">hr.point.top.reset.log.form</field>
+			<field name="model">hr.point.top.reset.log</field>
+			<field name="arch" type="xml">
+				<form edit="false" delete="false">
+					<group>
+						<p class="oe_edit_only" colspan="4">
+							This will reset TOP Point of every employee, regardless of level and branch, back to zero. Please be warned that after saving this action cannot be undone.
+						</p>
+						<field name="create_date"/>
+					</group>
+					<group>
+						<field name="line_ids" readonly="1" class="oe_read_only" nolabel="1">
+							<tree editable="bottom">
+								<field name="employee_id"/>
+								<field name="top_reset"/>
+							</tree>
+						</field>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="hr_point_top_reset_log_tree" model="ir.ui.view">
+			<field name="name">hr.point.top.reset.log.tree</field>
+			<field name="model">hr.point.top.reset.log</field>
+			<field name="arch" type="xml">
+				<tree edit="false" delete="false" create_label="Reset TOP Point">
+					<field name="create_date" />
+					<field name="line_ids" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="action_tbvip_top_point_reset" model="ir.actions.act_window">
+			<field name="name">TOP Points Reset</field>
+			<field name="res_model">hr.point.top.reset.log</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+
+		<menuitem id="menu_tbvip_top_point_reset" parent="hr_point_payroll.menu_hr_point" sequence="30" action="action_tbvip_top_point_reset"/>
 
 	</data>
 </openerp>

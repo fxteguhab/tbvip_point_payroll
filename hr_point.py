@@ -1,4 +1,4 @@
-from openerp.osv import osv
+from openerp.osv import osv, fields
 from datetime import datetime, timedelta, date
 from openerp import SUPERUSER_ID
 import pytz
@@ -44,60 +44,98 @@ class hr_point_type(osv.Model):
 class hr_point_employee_point(osv.Model):
 	_inherit = 'hr.point.employee.point'
 	
+	def _get_employee_data_basic(self, cr, uid, employee_id, context=None):
+		result = super(hr_point_employee_point, self)._get_employee_data_basic(cr, uid, employee_id, context=context)
+		employee_obj = self.pool.get('hr.employee')
+		employee = employee_obj.browse(cr, uid, employee_id, context=context)
+		result.update({'top_point': employee.top_point})
+		return result
+
 	def cron_generate_top_point(self, cr, uid, context={}):
 		branch_obj = self.pool.get('tbvip.branch')
 		employee_obj = self.pool.get('hr.employee')
 		point_type_obj = self.pool.get('hr.point.type')
-		employee_points = {}
-		
-		# Calculate today's points ( today = day_end_date )
+
+	# cron diasumsikan berjalan di tengah malam. Misal dia jalan di tanggal 5 maret, 
+	# maka dia menghitung TOP dari point2 di tanggal 4 maret
+		today = datetime.now().replace(hour=0, minute=0, second=0)
+	# debugging
+		#today = datetime(2018,2,26,0,0,0)
+		date_to = today - timedelta(seconds=1) - timedelta(hours=7) # perhitungkan timezone
+		date_from = date_to - timedelta(hours=24)
+
+	# hitung total point per employee dan akumulasi point per branch
+		points_by_branch = {} # dikelompokkan per branch
 		for branch_id in branch_obj.search(cr, uid, [], context=context):
+			points_by_branch[branch_id] = {
+				'total': 0,
+				'employee_points': {},
+			}
 			branch_employee_ids = employee_obj.get_employee_id_from_branch(cr, uid, branch_id, context=context)
-			total_branch_point = 0
-			for branch_employee_id in branch_employee_ids:
-				employee_points[branch_employee_id] = 0
-				# get employee points for today
-				today_employee_point_ids = self.search(cr, uid, [
-					('event_date', '>=', datetime.now().strftime("%Y-%m-%d 00:00:00")),
-					('event_date', '<=', datetime.now().strftime("%Y-%m-%d 23:59:59")),
-					('employee_id', '=', branch_employee_id)
-				], context=context)
-				today_employee_points = self.browse(cr, uid, today_employee_point_ids, context=context)
-				for today_employee_point in today_employee_points:
-					employee_points[branch_employee_id] += today_employee_point.point # add to employee points
-					total_branch_point += today_employee_point.point # add to total
-			if total_branch_point > 0:
-				# if total branch point positive, calculate
-				for branch_employee_id in branch_employee_ids:
-					employee_points[branch_employee_id] = employee_points[branch_employee_id] / total_branch_point
-			else:
-				# if total branch point is zero or negative, no one gets anything
-				for branch_employee_id in branch_employee_ids:
-					employee_points[branch_employee_id] = 0
-		
-		# Search employee with the highest point from all branches
-		top_employee_id = 0
-		current_highest_point = 0
-		for employee_id in employee_points:
-			if employee_points[employee_id] > current_highest_point:
-				current_highest_point = employee_points[employee_id]
-				top_employee_id = employee_id
-		
-		# Input point TOP today if highest point of employee is not zero
-		if current_highest_point > 0:
-			point_type_ids = point_type_obj.search(cr, uid, [
-				('name', '=', 'POIN_TOP')
-			], limit=1, context=context)
-			if point_type_ids and len(point_type_ids) == 1:
-				employee_point_vals = {
-					'event_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-					'employee_id': top_employee_id,
-					'point_type_id': point_type_ids[0],
-					'point': 1,
-					'reference': 'CRON - Generate Top Point',
-				}
-				new_id = self.create(cr, uid, employee_point_vals, context)
-	
+		# get yesterday's employee points
+			point_log_ids = self.search(cr, uid, [
+				('event_date', '>=', date_from.strftime("%Y-%m-%d %H:%M:%S")),
+				('event_date', '<=', date_to.strftime("%Y-%m-%d %H:%M:%S")),
+				('employee_id', 'in', branch_employee_ids)
+			], context=context)
+			for point_log in self.browse(cr, uid, point_log_ids, context=context):
+				employee_id = point_log.employee_id.id
+				point = point_log.point
+				multiplier = point_log.point_type_id.name == 'POIN_PENALTY' and -1 or 1
+			# update total point employee ybs
+				if employee_id not in points_by_branch[branch_id]['employee_points']: 
+					points_by_branch[branch_id]['employee_points'][employee_id] = 0
+				points_by_branch[branch_id]['employee_points'][employee_id] += point * multiplier
+			# update total point branch ini. hanya totalkan dari point yang positif/menambahkan
+				if multiplier > 0:
+					points_by_branch[branch_id]['total'] += point
+
+		"""
+		for branch_id in points_by_branch:
+			print "ID cabang: %s" % branch_id
+			print "Total poin di cabang: %s" % points_by_branch[branch_id]['total']
+			print "Total point per employee:"
+			for employee_id in points_by_branch[branch_id]['employee_points']:
+				print "Employee %s: %s" % (employee_id, points_by_branch[branch_id]['employee_points'][employee_id])
+			print "================================"
+		"""
+
+	# hitung siapa yang dapet paling tinggi di semua cabang
+	# total point seorang employee dibandingkan dengan total PER CABANG di hari kemarin
+	# lalu dicari yang paling tinggi siapa
+		ratio_by_employee = {}
+		for branch_id in points_by_branch:
+			total_branch = points_by_branch[branch_id]['total']
+			if total_branch == 0: continue # ini artinya tidak ada satupun yang berkontribusi point ke cabang itu
+			for employee_id in points_by_branch[branch_id]['employee_points']:
+				point = points_by_branch[branch_id]['employee_points'][employee_id]
+				if point > 0:
+					ratio_by_employee[employee_id] = float(point) / float(total_branch)
+			# menghandle kemungkinan total point si employee hari ini negatif
+			# kalau negatif, dianggap total point 0
+				else:
+					ratio_by_employee[employee_id] = 0
+		highest_ratio = 0
+		for employee_id in ratio_by_employee:
+			#print "%s: %s" % (employee_id,ratio_by_employee[employee_id])
+			if ratio_by_employee[employee_id] > highest_ratio:
+				highest_ratio = ratio_by_employee[employee_id]
+
+	# ok udah dapet ratio tertinggi. sekarang carilah seluruh employee dengan highest point ini
+	# ini untuk mengantisipasi point tertinggi bisa dicapai oleh > 1 orang
+	# hanya lakukan kalau ratio tertinggi > 0, untuk mengaitisipasi kasus super jarang yaitu
+	# di hari itu semuanya point negatif sehingga total branch itu 0
+		if highest_ratio > 0:
+			highest_employee_ids = []
+			for employee_id in ratio_by_employee:
+				if str(highest_ratio) == str(ratio_by_employee[employee_id]):
+					highest_employee_ids.append(employee_id)
+		# update TOP point untuk employee dengan ratio tertinggi 
+			for employee in employee_obj.browse(cr, uid, highest_employee_ids): 
+				employee_obj.write(cr, uid, [employee.id], {
+					'top_point': employee.top_point + 1,
+					})
+
 	def cron_overtime_and_late_attendance_point(self, cr, uid, context={}):
 
 	# versi juned, 20180212
@@ -108,9 +146,9 @@ class hr_point_employee_point(osv.Model):
 		attendance_obj = self.pool.get('hr.attendance')
 
 		date_now = datetime.now().replace(hour=0, minute=0, second=0)
-		date_from = date_now #- timedelta(hours=7)
+		date_from = date_now
 		date_from = date_from.strftime("%Y-%m-%d")
-		date_to = date_now + timedelta(hours=24) #- timedelta(seconds=1) # - timedelta(hours=7) - timedelta(seconds=1)
+		date_to = date_now + timedelta(hours=24)
 		date_to = date_to.strftime("%Y-%m-%d")
 		
 		#debugging
@@ -119,7 +157,6 @@ class hr_point_employee_point(osv.Model):
 	# get attendance settings
 		start_tolerance_after, finish_tolerance_before, early_overtime_start, early_overtime_finish, late_overtime_start, late_overtime_finish = \
 			attendance_config_settings_obj.get_attendance_setting(cr, uid, context=context)
-
 		"""
 		print start_tolerance_after
 		print finish_tolerance_before
@@ -128,7 +165,6 @@ class hr_point_employee_point(osv.Model):
 		print late_overtime_start
 		print late_overtime_finish
 		"""
-
 	# for each existing employee...
 		employee_ids = employee_obj.search(cr, uid, [], context=context)
 		for employee in employee_obj.browse(cr, uid, employee_ids, context=context):
@@ -151,7 +187,7 @@ class hr_point_employee_point(osv.Model):
 					})
 			# convert sign in hour/minute/second into minutes, rounding the second
 				sign_in_minutes = attendance_by_date[day]['sign_in'].hour * 60 + attendance_by_date[day]['sign_in'].minute
-				if attendance_by_date[day]['sign_in'].second >= 30: sign_in_minutes += 1
+				#if attendance_by_date[day]['sign_in'].second >= 30: sign_in_minutes += 1
 			# how many minutes this employee is late for this day?
 				start_with_tolerance = attendance_by_date[day]['start'] * 60 + start_tolerance_after
 				late_start = max(0, sign_in_minutes - start_with_tolerance)
@@ -171,7 +207,7 @@ class hr_point_employee_point(osv.Model):
 				if attendance_by_date[day]['sign_out']:
 				# convert sign out hour/minute/second into minutes, rounding the second
 					sign_out_minutes = attendance_by_date[day]['sign_out'].hour * 60 + attendance_by_date[day]['sign_out'].minute
-					if attendance_by_date[day]['sign_out'].second >= 30: sign_out_minutes += 1
+					#if attendance_by_date[day]['sign_out'].second >= 30: sign_out_minutes += 1
 				# how many minutes this employee leaves early?
 					finish_with_tolerance = attendance_by_date[day]['finish'] * 60 - finish_tolerance_before
 					early_leave = max(0, finish_with_tolerance - sign_out_minutes)
@@ -201,7 +237,6 @@ class hr_point_employee_point(osv.Model):
 					data['late_start'] + data['early_leave'], day, context=context)
 				attendance_obj.overtime_attendance(cr, uid, [employee.id],
 					data['early_start'] + data['overtime_leave'], day, context=context)
-		#raise osv.except_osv('test','test')
 
 		"""
 		yang di bawah ini adalah versi nibble as of 20180212
@@ -354,3 +389,53 @@ class hr_point_employee_point(osv.Model):
 				attendance_obj.overtime_attendance(cr, uid, [employee.id],
 					date_obj['early_overtime'] + date_obj['late_overtime'], date_obj['date'], context=context)
 		"""
+
+# ==========================================================================================================================
+
+class hr_point_top_reset_log(osv.osv):
+
+	_name = 'hr.point.top.reset.log'
+	_description = 'TOP Point reset log'
+
+	_columns = {
+		'create_date': fields.datetime('Reset Date'),
+		'line_ids': fields.one2many('hr.point.top.reset.log.line', 'header_id', 'Reset Employees'),
+	}
+
+	_defaults = {
+		'create_date': lambda *a: datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+	}
+
+	def create(self, cr, uid, vals, context={}):
+	# reset seluruh top_point employee menjadi 0
+	# sebelumnya, masukkan dulu ke line supaya ada historinya
+		log_line = []
+		employee_obj = self.pool.get('hr.employee')
+		employee_ids = employee_obj.search(cr, uid, [])
+		for employee in employee_obj.browse(cr, uid, employee_ids):
+		# hanya masukkan ke log line employee yang ada top pointnya
+			if employee.top_point > 0:
+				log_line.append([0,False,{
+					'employee_id': employee.id,
+					'top_reset': employee.top_point,
+					}])
+		if len(log_line) > 0:
+			vals.update({'line_ids': log_line})
+	# reset point employeenya
+		employee_obj.write(cr, uid, employee_ids, {
+			'top_point': 0,
+			})
+	# baru masukkan record seperti biasa
+		return super(hr_point_top_reset_log, self).create(cr, uid, vals, context=context)
+
+class hr_point_top_reset_log_line(osv.osv):
+
+	_name = 'hr.point.top.reset.log.line'
+	_description = 'TOP Point reset log line'
+
+	_columns = {
+		'header_id': fields.many2one('hr.point.top.reset.log', 'Header'),
+		'employee_id': fields.many2one('hr.employee', 'Employee', readonly=True),
+		'top_reset': fields.float('TOP Point on Reset', readonly=True),
+	}
+

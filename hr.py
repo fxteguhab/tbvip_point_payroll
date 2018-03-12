@@ -7,6 +7,14 @@ from openerp.tools.translate import _
 
 class hr_employee(osv.osv):
 	_inherit = 'hr.employee'
+
+	_columns = {
+		'top_point': fields.float('TOP Point', readonly=True),
+	}
+
+	_defaults = {
+		'top_point': 0,
+	}
 	
 	def get_employee_id_from_user(self, cr, uid, user_id, context=None):
 		employee_ids = self.search(cr, uid, [

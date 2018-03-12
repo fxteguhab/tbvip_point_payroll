@@ -45,3 +45,15 @@ class hr_payslip(osv.Model):
 				raise osv.except_osv(_('Error!'), _("This employee has already had confirmed payslip in the same week and year."))
 		self.compute_sheet(cr, uid, ids, context)  # compute sheet once again to rewrite xtra / penalty if there's any change
 		return super(hr_payslip, self).hr_verify_sheet(cr, uid, ids, context)
+
+	def _get_basic_bonus_inject_data(self, cr, uid, ids, employee_point_data, contract_id):
+		result = super(hr_payslip, self)._get_basic_bonus_inject_data(cr, uid, ids, employee_point_data, contract_id)
+	# tambahkan TOP point
+		basic_bonus = employee_point_data['basic']
+		result.append({
+			'name': 'TOP Point',
+			'code': 'TOP_POINT_BASIC',
+			'amount': basic_bonus['top_point'],
+			'contract_id': contract_id,
+			})
+		return result
