@@ -107,13 +107,15 @@ class hr_point_employee_point(osv.Model):
 		attendance_config_settings_obj = self.pool.get('attendance.config.settings')
 		attendance_obj = self.pool.get('hr.attendance')
 
-		#date_now = datetime.now() careful, debugging only
 		date_now = datetime.now().replace(hour=0, minute=0, second=0)
-		date_from = date_now - timedelta(hours=7)
+		date_from = date_now #- timedelta(hours=7)
 		date_from = date_from.strftime("%Y-%m-%d")
-		date_to = date_now + timedelta(hours=24) - timedelta(hours=7) - timedelta(seconds=1)
+		date_to = date_now + timedelta(hours=24) #- timedelta(seconds=1) # - timedelta(hours=7) - timedelta(seconds=1)
 		date_to = date_to.strftime("%Y-%m-%d")
-
+		
+		#debugging
+		#date_from = date(2018,3,2).strftime("%Y-%m-%d")
+		#date_to = date(2018,3,3).strftime("%Y-%m-%d")
 	# get attendance settings
 		start_tolerance_after, finish_tolerance_before, early_overtime_start, early_overtime_finish, late_overtime_start, late_overtime_finish = \
 			attendance_config_settings_obj.get_attendance_setting(cr, uid, context=context)
@@ -130,7 +132,6 @@ class hr_point_employee_point(osv.Model):
 	# for each existing employee...
 		employee_ids = employee_obj.search(cr, uid, [], context=context)
 		for employee in employee_obj.browse(cr, uid, employee_ids, context=context):
-			print employee.name
 		# get currently active contract
 			contract_ids = payslip_obj.get_contract(cr, uid, employee, date_from, date_to, context=context)
 		# no contract? pass this employee
@@ -146,7 +147,7 @@ class hr_point_employee_point(osv.Model):
 					'early_start': 0,
 					'late_start': 0,
 					'early_leave': 0,
-					'late_leave': 0,
+					'overtime_leave': 0,
 					})
 			# convert sign in hour/minute/second into minutes, rounding the second
 				sign_in_minutes = attendance_by_date[day]['sign_in'].hour * 60 + attendance_by_date[day]['sign_in'].minute
@@ -186,7 +187,6 @@ class hr_point_employee_point(osv.Model):
 					elif sign_out_minutes > overtime_to:
 						overtime_leave = overtime_to - overtime_from
 					attendance_by_date[day]['overtime_leave'] = overtime_leave
-
 			"""
 			for day in attendance_by_date:
 				print day
@@ -195,14 +195,13 @@ class hr_point_employee_point(osv.Model):
 				print "finish early: %s - finish overtime: %s" % (attendance_by_date[day]['early_leave'],attendance_by_date[day]['overtime_leave'])
 				print "=================================================================="
 			"""
-
 			for day in attendance_by_date:
 				data = attendance_by_date[day]
 				attendance_obj.late_attendance(cr, uid, [employee.id],
 					data['late_start'] + data['early_leave'], day, context=context)
 				attendance_obj.overtime_attendance(cr, uid, [employee.id],
 					data['early_start'] + data['overtime_leave'], day, context=context)
-
+		#raise osv.except_osv('test','test')
 
 		"""
 		yang di bawah ini adalah versi nibble as of 20180212
