@@ -65,6 +65,7 @@
 		<record id="hr_point_type_penalty" model="hr.point.type">
 			<field name="name">POIN_PENALTY</field>
 			<field name="desc">Point Penalty</field>
+			<field name="increase_decrease">decrease</field>
 		</record>
 
 		<record id="hr_point_type_top" model="hr.point.type">
