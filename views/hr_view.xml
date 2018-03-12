@@ -24,5 +24,16 @@
 			</field>
 		</record>
 
+		<record model="ir.ui.view" id="hr_employee_tree_inherit">
+			<field name="name">hr.employee.tree.inherit</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr_point_payroll.hr_employee_tree_inherit"/>
+			<field name="arch" type="xml">
+				<field name="total_point" position="after">
+					<field name="top_point" />
+				</field>
+			</field>
+		</record>
+
 	</data>
 </openerp>
