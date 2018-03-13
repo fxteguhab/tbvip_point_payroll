@@ -19,6 +19,30 @@
 
 <!-- TOP POINT RESET LOG -->
 
+		<record id="hr_point_top_log_tree" model="ir.ui.view">
+			<field name="name">hr.point.top.log.tree</field>
+			<field name="model">hr.point.top.log</field>
+			<field name="arch" type="xml">
+				<tree edit="false" delete="false" create="false">
+					<field name="create_date" string="Log Date" />
+					<field name="employee_id" />
+					<field name="point" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="action_tbvip_top_point_log" model="ir.actions.act_window">
+			<field name="name">TOP Point Log</field>
+			<field name="res_model">hr.point.top.log</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree</field>
+		</record>
+
+		<menuitem id="menu_tbvip_top_point_log" parent="hr_point_payroll.menu_hr_point" sequence="29" action="action_tbvip_top_point_log"/>
+
+
+<!-- TOP POINT RESET LOG -->
+
 		<record id="hr_point_top_reset_log_form" model="ir.ui.view">
 			<field name="name">hr.point.top.reset.log.form</field>
 			<field name="model">hr.point.top.reset.log</field>
