@@ -4,6 +4,7 @@ from openerp import SUPERUSER_ID
 import pytz
 from openerp.tools.translate import _
 
+# ==========================================================================================================================
 
 class hr_point_type(osv.Model):
 	_inherit = 'hr.point.type'
@@ -41,6 +42,19 @@ class hr_point_type(osv.Model):
 			'employee_level_id': employee_level_obj.get_employee_lowest_level_id(cr, uid, context=context),  # cannot use calculate_employee_level because level assignment only done if the new level is higher
 		}, context=context)
 
+# ==========================================================================================================================
+
+class hr_point_top_log(osv.Model):
+	_name = 'hr.point.top.log'
+	_description = 'TOP Point log'
+
+	_columns = {
+		'employee_id': fields.many2one('hr.employee', 'Employee'),
+		'point': fields.integer('Point'), # mana tau kapan2 ada kemungkinan top point ngga cuman 1
+	}
+
+# ==========================================================================================================================
+
 class hr_point_employee_point(osv.Model):
 	_inherit = 'hr.point.employee.point'
 	
@@ -55,12 +69,13 @@ class hr_point_employee_point(osv.Model):
 		branch_obj = self.pool.get('tbvip.branch')
 		employee_obj = self.pool.get('hr.employee')
 		point_type_obj = self.pool.get('hr.point.type')
+		top_point_log_obj = self.pool.get('hr.point.top.log')
 
 	# cron diasumsikan berjalan di tengah malam. Misal dia jalan di tanggal 5 maret, 
 	# maka dia menghitung TOP dari point2 di tanggal 4 maret
 		today = datetime.now().replace(hour=0, minute=0, second=0)
 	# debugging
-		#today = datetime(2018,2,26,0,0,0)
+		today = datetime(2018,2,26,0,0,0)
 		date_to = today - timedelta(seconds=1) - timedelta(hours=7) # perhitungkan timezone
 		date_from = date_to - timedelta(hours=24)
 
@@ -132,6 +147,10 @@ class hr_point_employee_point(osv.Model):
 					highest_employee_ids.append(employee_id)
 		# update TOP point untuk employee dengan ratio tertinggi 
 			for employee in employee_obj.browse(cr, uid, highest_employee_ids): 
+				top_point_log_obj.create(cr, uid, {
+					'employee_id': employee.id,
+					'point': 1,
+					})
 				employee_obj.write(cr, uid, [employee.id], {
 					'top_point': employee.top_point + 1,
 					})
@@ -427,6 +446,8 @@ class hr_point_top_reset_log(osv.osv):
 			})
 	# baru masukkan record seperti biasa
 		return super(hr_point_top_reset_log, self).create(cr, uid, vals, context=context)
+
+# ==========================================================================================================================
 
 class hr_point_top_reset_log_line(osv.osv):
 
