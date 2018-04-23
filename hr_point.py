@@ -73,9 +73,9 @@ class hr_point_employee_point(osv.Model):
 
 	# cron diasumsikan berjalan di tengah malam. Misal dia jalan di tanggal 5 maret, 
 	# maka dia menghitung TOP dari point2 di tanggal 4 maret
-		today = datetime.now().replace(hour=0, minute=0, second=0)
+		today = (datetime.now() + timedelta(hours=7)).replace(hour=0, minute=0, second=0, microsecond=0)
 	# debugging
-		today = datetime(2018,2,26,0,0,0)
+		#today = datetime(2018,3,20,0,0,0)
 		date_to = today - timedelta(seconds=1) - timedelta(hours=7) # perhitungkan timezone
 		date_from = date_to - timedelta(hours=24)
 
@@ -147,10 +147,14 @@ class hr_point_employee_point(osv.Model):
 					highest_employee_ids.append(employee_id)
 		# update TOP point untuk employee dengan ratio tertinggi 
 			for employee in employee_obj.browse(cr, uid, highest_employee_ids): 
-				top_point_log_obj.create(cr, uid, {
+				new_log_id = top_point_log_obj.create(cr, uid, {
 					'employee_id': employee.id,
 					'point': 1,
 					})
+				cr.execute("""
+					UPDATE hr_point_top_log SET create_date='%s' 
+					WHERE id=%s
+					""" % (date_to.strftime("%Y-%m-%d %H:%M:%S"), new_log_id))
 				employee_obj.write(cr, uid, [employee.id], {
 					'top_point': employee.top_point + 1,
 					})
@@ -169,10 +173,10 @@ class hr_point_employee_point(osv.Model):
 		date_from = date_from.strftime("%Y-%m-%d")
 		date_to = date_now + timedelta(hours=24)
 		date_to = date_to.strftime("%Y-%m-%d")
-		
+
 		#debugging
-		#date_from = date(2018,3,2).strftime("%Y-%m-%d")
-		#date_to = date(2018,3,3).strftime("%Y-%m-%d")
+		#date_from = date(2018,3,16).strftime("%Y-%m-%d")
+		#date_to = date(2018,3,17).strftime("%Y-%m-%d")
 	# get attendance settings
 		start_tolerance_after, finish_tolerance_before, early_overtime_start, early_overtime_finish, late_overtime_start, late_overtime_finish = \
 			attendance_config_settings_obj.get_attendance_setting(cr, uid, context=context)
@@ -242,20 +246,22 @@ class hr_point_employee_point(osv.Model):
 					elif sign_out_minutes > overtime_to:
 						overtime_leave = overtime_to - overtime_from
 					attendance_by_date[day]['overtime_leave'] = overtime_leave
-			"""
+
 			for day in attendance_by_date:
 				print day
 				print "in: %s - out: %s" % (attendance_by_date[day]['sign_in'],attendance_by_date[day]['sign_out'])
 				print "start late: %s - start early: %s" % (attendance_by_date[day]['late_start'],attendance_by_date[day]['early_start'])
 				print "finish early: %s - finish overtime: %s" % (attendance_by_date[day]['early_leave'],attendance_by_date[day]['overtime_leave'])
 				print "=================================================================="
-			"""
+
 			for day in attendance_by_date:
 				data = attendance_by_date[day]
 				attendance_obj.late_attendance(cr, uid, [employee.id],
 					data['late_start'] + data['early_leave'], day, context=context)
 				attendance_obj.overtime_attendance(cr, uid, [employee.id],
 					data['early_start'] + data['overtime_leave'], day, context=context)
+
+		#raise osv.except_osv('test','test')
 
 		"""
 		yang di bawah ini adalah versi nibble as of 20180212
