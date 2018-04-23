@@ -168,7 +168,7 @@ class hr_point_employee_point(osv.Model):
 		attendance_config_settings_obj = self.pool.get('attendance.config.settings')
 		attendance_obj = self.pool.get('hr.attendance')
 
-		date_now = datetime.now().replace(hour=0, minute=0, second=0)
+		date_now = (datetime.now() + timedelta(hours=7)).replace(hour=0, minute=0, second=0)
 		date_from = date_now
 		date_from = date_from.strftime("%Y-%m-%d")
 		date_to = date_now + timedelta(hours=24)

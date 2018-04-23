@@ -1,12 +1,14 @@
 from openerp.osv import osv, fields
+from pyfcm import FCMNotification
 
 # ==========================================================================================================================
 
 class purchase_order(osv.osv):
 	_inherit = 'purchase.order'
-	
+
 	def wkf_confirm_order(self, cr, uid, ids, context=None):
 		result = super(purchase_order, self).wkf_confirm_order(cr, uid, ids, context=context)
+
 		# input points
 		employee_point_obj = self.pool.get('hr.point.employee.point')
 		employee_obj = self.pool.get('hr.employee')
@@ -32,4 +34,5 @@ class purchase_order(osv.osv):
 				},
 				reference='Purchase Order - {}'.format(purchase.name),
 				context=context)
+
 		return result
