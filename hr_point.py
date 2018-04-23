@@ -73,9 +73,9 @@ class hr_point_employee_point(osv.Model):
 
 	# cron diasumsikan berjalan di tengah malam. Misal dia jalan di tanggal 5 maret, 
 	# maka dia menghitung TOP dari point2 di tanggal 4 maret
-		today = datetime.now().replace(hour=0, minute=0, second=0)
+		today = (datetime.now() + timedelta(hours=7)).replace(hour=0, minute=0, second=0, microsecond=0)
 	# debugging
-		today = datetime(2018,2,26,0,0,0)
+		#today = datetime(2018,3,20,0,0,0)
 		date_to = today - timedelta(seconds=1) - timedelta(hours=7) # perhitungkan timezone
 		date_from = date_to - timedelta(hours=24)
 
@@ -147,10 +147,14 @@ class hr_point_employee_point(osv.Model):
 					highest_employee_ids.append(employee_id)
 		# update TOP point untuk employee dengan ratio tertinggi 
 			for employee in employee_obj.browse(cr, uid, highest_employee_ids): 
-				top_point_log_obj.create(cr, uid, {
+				new_log_id = top_point_log_obj.create(cr, uid, {
 					'employee_id': employee.id,
 					'point': 1,
 					})
+				cr.execute("""
+					UPDATE hr_point_top_log SET create_date='%s' 
+					WHERE id=%s
+					""" % (date_to.strftime("%Y-%m-%d %H:%M:%S"), new_log_id))
 				employee_obj.write(cr, uid, [employee.id], {
 					'top_point': employee.top_point + 1,
 					})
@@ -164,7 +168,7 @@ class hr_point_employee_point(osv.Model):
 		attendance_config_settings_obj = self.pool.get('attendance.config.settings')
 		attendance_obj = self.pool.get('hr.attendance')
 
-		date_now = datetime.now().replace(hour=0, minute=0, second=0)
+		date_now = (datetime.now() + timedelta(hours=7)).replace(hour=0, minute=0, second=0)
 		date_from = date_now
 		date_from = date_from.strftime("%Y-%m-%d")
 		date_to = date_now + timedelta(hours=24)

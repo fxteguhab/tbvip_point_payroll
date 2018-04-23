@@ -40,7 +40,9 @@ class stock_opname_memory(osv.osv_memory):
 						'ROW_QTY': row_qty,
 						'ROW_COUNT': len(memory.line_ids),
 					},
-					reference='SO Override - {}'.format(memory.location_id.name),
+					#TEGUH@20180331: rubah keterangan di employee point
+					reference= memory.name + ' @{}'.format(memory.location_id.name),
+					#reference='SO Override - {}'.format(memory.location_id.name),
 					context=context)
 		
 		return result
