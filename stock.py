@@ -15,10 +15,15 @@ class stock_inventory(osv.osv):
 	}
 	
 	# OVERRIDES -------------------------------------------------------------------------------------------------------------
-	
+	#VALIDATE STOCK OPNAME
 	def action_done(self, cr, uid, ids, context=None):
 		result = super(stock_inventory, self).action_done(cr, uid, ids, context=context)
 		# input points
+		is_override =context.get('is_override', False)
+		if is_override:
+			activity_str = 'OVERRIDE_STOCK_OPNAME'
+		else:
+			activity_str = 'SO'
 		employee_point_obj = self.pool.get('hr.point.employee.point')
 		employee_obj = self.pool.get('hr.employee')
 		for inventory in self.browse(cr, uid, ids, context=context):
@@ -30,7 +35,7 @@ class stock_inventory(osv.osv):
 				if delta_old_and_new_total_qty_line > 0:
 					branch_employee_ids = employee_obj.get_employee_id_from_branch(cr, uid, inventory.branch_id.id, context=context)
 					employee_point_obj.input_point(cr, uid,
-						activity_code='SO',
+						activity_code=activity_str,
 						roles={
 							'EMPBRC': branch_employee_ids,
 						},
@@ -39,20 +44,23 @@ class stock_inventory(osv.osv):
 							'NEW_QTY': line.product_qty,
 							'EMPLOYEE_BRANCH_COUNT': len(branch_employee_ids),
 						},
-						reference='Stock Opname - {}'.format(inventory.name),
+						#reference='Stock Opname - {}'.format(inventory.name),
+						reference= inventory.name + ' @{}'.format(inventory.location_id.name),
 						context=context)
 			# point for doing task
 			employee_point_obj.input_point(cr, uid,
-				activity_code='SO',
+				activity_code=activity_str,
 				roles={
 					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
 					'EMP': [inventory.employee_id.id],
+					'EMPALL': [inventory.employee_id.id],
 				},
 				required_parameters={
 					'ROW_QTY': row_total_qty,
 					'ROW_COUNT': len(inventory.line_ids),
 				},
-				reference='Stock Opname - {}'.format(inventory.name),
+				#reference='Stock Opname - {}'.format(inventory.name),
+				reference= inventory.name + ' @{}'.format(inventory.location_id.name),
 				context=context)
 		return result
 
