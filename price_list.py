@@ -53,7 +53,7 @@ class product_current_price(osv.osv):
 		# get activity code
 		activity_code = 'SALES_PRODUCT_CURRENT_PRICE'
 		price_type = price_type_obj.browse(cr, uid, vals['price_type_id'], context=context)
-		if price_type.type == 'sell':
+		if price_type.type == 'buy':
 			activity_code = 'PURCHASE_PRODUCT_CURRENT_PRICE'
 		employee_point_obj.input_point(cr, uid,
 			activity_code=activity_code,
