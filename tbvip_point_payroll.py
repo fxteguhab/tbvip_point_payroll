@@ -61,6 +61,7 @@ class tbvip_additional_activity(osv.osv):
 class tbvip_additional_activity_log(osv.osv):
 	_name = 'tbvip.additional.activity.log'
 	_description = 'Additional Activity Log'
+	_order = 'activity_time desc'
 	
 # COLUMNS -------------------------------------------------------------------------------------------------------------------
 	
@@ -119,6 +120,7 @@ class tbvip_additional_activity_log(osv.osv):
 			'employee_id': additional_activity_log.employee_id.id,
 			'point_type_id': point_type_id,
 			'point': additional_activity_log.additional_activity_id.point,
+			'reference' : additional_activity_log.additional_activity_id.name + ' :: '+ additional_activity_log.description + ' - '+additional_activity_log.create_uid.name,
 			# 'reference_model': self._name,
 			# 'reference_id': additional_activity_log_id,
 		}

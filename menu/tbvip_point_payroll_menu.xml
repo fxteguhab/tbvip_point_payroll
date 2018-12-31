@@ -9,16 +9,21 @@
 		</record>
 
 		<record id="action_tbvip_additional_activity_extra_log" model="ir.actions.act_window">
-			<field name="name">Extra</field>
+			<field name="name">Extra Points</field>
 			<field name="res_model">tbvip.additional.activity.log</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form</field>
 			<field name="domain">[('additional_activity_id.activity_type', '=', 'extra')]</field>
-			<field name="context">{'menu_from': 'extra','activity_type': 'extra'}</field>
+			<field name="context">{
+				'menu_from': 'extra',
+				'activity_type': 'extra',
+				'search_default_today':'1',
+				'search_default_branch_id':'1',
+				}</field>
 		</record>
 
 		<record id="action_tbvip_additional_activity_penalty_log" model="ir.actions.act_window">
-			<field name="name">Penalty</field>
+			<field name="name">Penalty Points</field>
 			<field name="res_model">tbvip.additional.activity.log</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form</field>
