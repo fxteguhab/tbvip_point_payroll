@@ -51,7 +51,6 @@ class hr_point_top_log(osv.Model):
 	_columns = {
 		'employee_id': fields.many2one('hr.employee', 'Employee'),
 		'branch_id': fields.related('employee_id', 'branch_id', type="char", string="Branch", store=True),
-		'ratio' : fields.float()
 		'point': fields.integer('Point',group_operator="sum"), # mana tau kapan2 ada kemungkinan top point ngga cuman 1
 	}
 
