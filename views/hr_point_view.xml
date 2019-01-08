@@ -25,9 +25,30 @@
 			<field name="arch" type="xml">
 				<tree edit="false" delete="false" create="false">
 					<field name="create_date" string="Log Date" />
+					<field name="branch_id" />
 					<field name="employee_id" />
 					<field name="point" />
 				</tree>
+			</field>
+		</record>
+
+		<record id="hr_point_top_log_search" model="ir.ui.view">
+			<field name="name">hr.point.top.log.search</field>
+			<field name="model">hr.point.top.log</field>
+			<field name="arch" type="xml">
+				<search>
+					<group string="Group by Timeline">
+						<filter string="Year" name="time_year" domain="[]" context="{'group_by': 'create_date:year'}"/>
+						<filter string="Month" name="time_month" domain="[]" context="{'group_by': 'create_date:month'}"/>
+						<filter string="Week" name="time_week" domain="[]" context="{'group_by': 'create_date:week'}"/>
+						<filter string="Day" name="time_day" domain="[]" context="{'group_by': 'create_date:day'}"/>	
+						<filter string="Today" name = "today" domain="[('create_date', '&gt;=', datetime.datetime.now().strftime('%Y-%m-%d 00:00:00')),('create_date', '&lt;=', datetime.datetime.now().strftime('%Y-%m-%d 23:23:59'))]"/>
+					</group>
+					<group string="Group by">
+						<filter string="Branch" name="branch_id" domain="[]" context="{'group_by': 'branch_id'}"/>
+						<filter string="Employee" name="employee_id" domain="[]" context="{'group_by': 'employee_id'}"/>
+					</group>
+				</search>
 			</field>
 		</record>
 
