@@ -97,14 +97,15 @@ class hr_point_employee_point(osv.Model):
 			for point_log in self.browse(cr, uid, point_log_ids, context=context):
 				employee_id = point_log.employee_id.id
 				point = point_log.point
-				multiplier = point_log.point_type_id.name == 'POIN_PENALTY' and -1 or 1
+				multiplier = 1 #point_log.point_type_id.name == 'POIN_PENALTY' and -1 or 1
 			# update total point employee ybs
 				if employee_id not in points_by_branch[branch_id]['employee_points']: 
 					points_by_branch[branch_id]['employee_points'][employee_id] = 0
 				points_by_branch[branch_id]['employee_points'][employee_id] += point * multiplier
 			# update total point branch ini. hanya totalkan dari point yang positif/menambahkan
-				if multiplier > 0:
-					points_by_branch[branch_id]['total'] += point
+				#if multiplier > 0:
+				#	points_by_branch[branch_id]['total'] += point
+				points_by_branch[branch_id]['total'] += point
 
 		"""
 		for branch_id in points_by_branch:

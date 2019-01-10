@@ -51,8 +51,11 @@ class tbvip_additional_activity(osv.osv):
 		#  check point whether it suits the type or not
 		if activity_type == 'extra' and point < 0:
 			raise osv.except_osv(_('Warning!'), _("Extra point should be positive."))
-		if activity_type == 'penalty' and point < 0:
-			raise osv.except_osv(_('Warning!'), _("Penalty point should be positive, only the payment will be negative."))
+		if activity_type == 'penalty' and point > 0:
+			raise osv.except_osv(_('Warning!'), _("Penalty point should be negative."))
+
+		#if activity_type == 'penalty' and point < 0:
+		#	raise osv.except_osv(_('Warning!'), _("Penalty point should be positive, only the payment will be negative."))
 				
 
 # ===========================================================================================================================
@@ -71,7 +74,7 @@ class tbvip_additional_activity_log(osv.osv):
 		'activity_time': fields.datetime('Time', required=True),
 		'additional_activity_id': fields.many2one('tbvip.additional.activity', 'Activity', required=True),
 		'employee_point_id': fields.many2one('hr.point.employee.point', 'Employee Point', ondelete='set null'),
-		'description': fields.text('Description'),
+		'description': fields.text('Description', required=True),
 	}
 	
 # DEFAULTS ------------------------------------------------------------------------------------------------------------------
