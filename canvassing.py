@@ -36,6 +36,9 @@ class canvassing_canvas(osv.osv):
 					employee_ids.append(inputer_id)	
 
 			time_diff = (datetime.strptime(canvass.max_load_time, fmt) - max_load_time_limit).total_seconds()
+			if (time_diff < 0):
+				time_diff = 0
+
 			employee_point_obj.input_point(cr, uid,
 				activity_code='CANVASS',
 				roles={
