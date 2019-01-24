@@ -64,7 +64,8 @@ class hr_attendance(osv.osv):
 					'LATE_MINUTES': late_minutes,
 					'XTRA_MINUTES': 0,
 				},
-				reference='Attendance Late - {}'.format(date),
+				reference='Attendance Late - {} minute(s)'.format(late_minutes),
+				#reference='Attendance Late - {}'.format(date),
 				context=context)
 
 	def overtime_attendance(self, cr, uid, overtime_employee_ids, overtime_minutes, date, context=None):
@@ -79,5 +80,6 @@ class hr_attendance(osv.osv):
 					'LATE_MINUTES': 0,
 					'XTRA_MINUTES': overtime_minutes,
 				},
-				reference='Attendance Overtime - {}'.format(date),
+				reference='Attendance Overtime - {} minute(s)'.format(overtime_minutes),
+				#reference='Attendance Overtime - {}'.format(date),
 				context=context)
