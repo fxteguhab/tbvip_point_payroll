@@ -1,5 +1,5 @@
 from openerp.osv import osv, fields
-from pyfcm import FCMNotification
+#from pyfcm import FCMNotification
 
 # ==========================================================================================================================
 
