@@ -17,7 +17,6 @@
 		'menu/tbvip_point_payroll_menu.xml',
 		'views/fleet_view.xml',
 		'views/tbvip_point_payroll.xml',
-		'views/stock_opname_view.xml',
 		'views/stock_view.xml',
 		'views/hr_view.xml',
 		'views/hr_point_view.xml',

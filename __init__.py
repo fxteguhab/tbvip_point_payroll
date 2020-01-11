@@ -5,7 +5,6 @@ import canvassing
 import fleet
 import hr
 import stock
-import stock_opname
 import sale
 import purchase
 import hr_point
