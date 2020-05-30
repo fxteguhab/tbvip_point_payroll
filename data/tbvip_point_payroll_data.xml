@@ -78,11 +78,6 @@
 			<field name="desc">Point Motor</field>
 		</record>
 
-		<record id="hr_point_type_motor_sendiri" model="hr.point.type">
-			<field name="name">POIN_MOTOR_SENDIRI</field>
-			<field name="desc">Point Motor Sendiri</field>
-		</record>
-
 		<record id="hr_point_type_so" model="hr.point.type">
 			<field name="name">POIN_SO</field>
 			<field name="desc">Point SO</field>
