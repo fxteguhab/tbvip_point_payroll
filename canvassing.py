@@ -30,7 +30,7 @@ class canvassing_canvas(osv.osv):
 				try:
 					delivery_time = datetime.strptime(line.load_time, fmt)
 				except:
-					delivery_time = datetime.strptime("48:00:00", fmt)
+					delivery_time = datetime.strptime("23:59:59", fmt)
 
 				if (delivery_time > max_load_time_limit):	
 					sale_order_id = sale_order_obj.search(cr,uid,[('name', '=', line.stock_picking_id.origin)], limit=1)
