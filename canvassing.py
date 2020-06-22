@@ -39,7 +39,11 @@ class canvassing_canvas(osv.osv):
 					employee_ids.append(sale_order.employee_id.id)	
 					employee_ids.append(inputer_id)	
 
-			time_diff = (datetime.strptime(canvass.max_load_time, fmt) - max_load_time_limit).total_seconds()
+			try:
+				time_diff = (datetime.strptime(canvass.max_load_time, fmt) - max_load_time_limit).total_seconds()
+			except:
+				time_diff = (datetime.strptime("23:59:59", fmt)- max_load_time_limit).total_seconds()
+
 			if (time_diff < 0):
 				time_diff = 0
 
