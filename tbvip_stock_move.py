@@ -1,6 +1,6 @@
 from openerp.osv import osv, fields
 from openerp.tools.translate import _
-
+from datetime import datetime, timedelta
 
 # ==========================================================================================================================
 
@@ -15,6 +15,7 @@ class tbvip_interbranch_stock_move(osv.Model):
 		for sm in self.browse(cr, uid, ids):
 			# sender
 			employee_point_obj.input_point(cr, uid,
+				event_date= datetime.now(),
 				activity_code='INTERBRANCH_TRANSFER_SEND',
 				roles={
 					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, sm.input_user_id.id, context=context)],
@@ -30,6 +31,7 @@ class tbvip_interbranch_stock_move(osv.Model):
 			
 			# receiver
 			employee_point_obj.input_point(cr, uid,
+				event_date= datetime.now(),
 				activity_code='INTERBRANCH_TRANSFER_RECEIVE',
 				roles={
 					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
@@ -58,6 +60,7 @@ class tbvip_interbranch_stock_move_line(osv.Model):
 			for sml in self.browse(cr, uid, ids):
 				if sml.is_changed:
 					employee_point_obj.input_point(cr, uid,
+						event_date= datetime.now(),
 						activity_code='MODIFIED_INTERBRANCH_TRANSFER',
 						roles={
 							'ADM': [employee_obj.get_employee_id_from_user(cr, uid, sml.header_id.input_user_id.id, context=context)],

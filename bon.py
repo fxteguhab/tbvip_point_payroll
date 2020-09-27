@@ -1,4 +1,5 @@
 from openerp.osv import osv, fields
+from datetime import datetime, timedelta
 from openerp.tools.translate import _
 
 
@@ -14,6 +15,7 @@ class tbvip_bon_book(osv.osv):
 		employee_point_obj = self.pool.get('hr.point.employee.point')
 		employee_obj = self.pool.get('hr.employee')
 		employee_point_obj.input_point(cr, uid,
+			event_date = datetime.now(),
 			activity_code='BON_BOOK',
 			roles={
 				'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],

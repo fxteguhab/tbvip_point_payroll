@@ -1,5 +1,5 @@
 from openerp.osv import osv, fields
-
+from datetime import datetime, timedelta
 # ===========================================================================================================================
 
 class stock_inventory(osv.osv):
@@ -35,6 +35,7 @@ class stock_inventory(osv.osv):
 				if delta_old_and_new_total_qty_line > 0:
 					branch_employee_ids = employee_obj.get_employee_id_from_branch(cr, uid, inventory.branch_id.id, context=context)
 					employee_point_obj.input_point(cr, uid,
+						event_date= datetime.now(),
 						activity_code=activity_str,
 						roles={
 							'EMPBRC': branch_employee_ids,
@@ -49,6 +50,7 @@ class stock_inventory(osv.osv):
 						context=context)
 			# point for doing task
 			employee_point_obj.input_point(cr, uid,
+				event_date= datetime.now(),
 				activity_code=activity_str,
 				roles={
 					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
@@ -72,6 +74,7 @@ class stock_bonus_usage(osv.osv):
 		result = super(stock_bonus_usage, self).action_approve(cr, uid, ids, context)
 		for bonus_usage in self.browse(cr, uid, ids, context=context):
 			self.pool.get('hr.point.employee.point').input_point(cr, uid,
+				event_date= datetime.now(),
 				activity_code='BONUS_PRODUCT_USAGE',
 				roles={
 					'ADM': [uid],

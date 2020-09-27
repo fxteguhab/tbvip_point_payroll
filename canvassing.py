@@ -49,6 +49,7 @@ class canvassing_canvas(osv.osv):
 
 			employee_point_obj.input_point(cr, uid,
 				activity_code='CANVASS',
+				event_date = canvass.date_delivered,
 				roles={
 					'DRV1': [canvass.driver1_id.id],
 					'DRV2': [canvass.driver2_id.id],

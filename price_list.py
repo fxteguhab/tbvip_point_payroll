@@ -1,5 +1,6 @@
 
 from openerp.osv import osv, fields
+from datetime import datetime, timedelta
 from openerp.tools.translate import _
 
 
@@ -27,6 +28,7 @@ class price_list(osv.osv):
 			row_count += len(vals['line_category_ids'])
 		# input
 		employee_point_obj.input_point(cr, uid,
+			event_date = datetime.now(),
 			activity_code=activity_code,
 			roles={
 				'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
@@ -56,6 +58,7 @@ class product_current_price(osv.osv):
 		if price_type.type == 'buy':
 			activity_code = 'PURCHASE_PRODUCT_CURRENT_PRICE'
 		employee_point_obj.input_point(cr, uid,
+			event_date = datetime.now(),
 			activity_code=activity_code,
 			roles={
 				'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],

@@ -56,6 +56,7 @@ class hr_attendance(osv.osv):
 		if late_minutes > 0:
 			employee_point_obj = self.pool.get('hr.point.employee.point')
 			employee_point_obj.input_point(cr, uid,
+				event_date = datetime.now(),
 				activity_code='ATTENDANCE',
 				roles={
 					'EMP': late_employee_ids,
@@ -72,6 +73,7 @@ class hr_attendance(osv.osv):
 		if overtime_minutes > 0:
 			employee_point_obj = self.pool.get('hr.point.employee.point')
 			employee_point_obj.input_point(cr, uid,
+				event_date = datetime.now(),
 				activity_code='ATTENDANCE',
 				roles={
 					'EMP': overtime_employee_ids,

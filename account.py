@@ -29,6 +29,7 @@ class tbvip_day_end(osv.osv):
 				last_day_end = self.browse(cr, uid, last_day_end_ids[0], context=context)
 				# deduct point from the latest
 				employee_point_obj.cancel_input_point(cr, uid,
+					event_date=day_end_date,
 					activity_code='CASH_BALANCE',
 					roles={
 						'ADM': [employee_obj.get_employee_id_from_user(cr, uid, last_day_end.create_uid.id, context=context)],
@@ -42,6 +43,7 @@ class tbvip_day_end(osv.osv):
 		
 		# input point if balanced or not, can be extra or penalty
 		employee_point_obj.input_point(cr, uid,
+			event_date = day_end_date,
 			activity_code='CASH_BALANCE',
 			roles={
 				'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],

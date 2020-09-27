@@ -25,6 +25,7 @@ class sale_order(osv.osv):
 			
 			# sales confirm (who confirm and employee responsible for the sales)
 			employee_point_obj.input_point(cr, uid,
+				event_date=sale.date_order,
 				activity_code='SALES',
 				roles={
 					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],

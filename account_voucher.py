@@ -15,6 +15,7 @@ class account_voucher(osv.osv):
 			employee_point_obj = self.pool.get('hr.point.employee.point')
 			employee_obj = self.pool.get('hr.employee')
 			employee_point_obj.input_point(cr, uid,
+				event_date = voucher.create_date,
 				activity_code='SUPPLIER_PAYMENT_SAVE',
 				roles={
 					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
@@ -34,6 +35,7 @@ class account_voucher(osv.osv):
 		# Customer Payment
 			if voucher.type == 'receipt':
 				employee_point_obj.input_point(cr, uid,
+				event_date = voucher.create_date,	
 				activity_code='CUSTOMER_PAYMENT',
 				roles={
 					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
@@ -44,6 +46,7 @@ class account_voucher(osv.osv):
 		# Supplier Payment
 			elif voucher.type == 'payment':
 				employee_point_obj.input_point(cr, uid,
+					event_date = voucher.create_date,
 					activity_code='SUPPLIER_PAYMENT_VALIDATE',
 					roles={
 						'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],

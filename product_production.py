@@ -1,4 +1,5 @@
 from openerp.osv import osv, fields
+from datetime import datetime, timedelta
 
 class product_production(osv.osv):
 	_inherit = "product.production"
@@ -10,6 +11,7 @@ class product_production(osv.osv):
 		employee_obj = self.pool.get('hr.employee')
 		for pp in self.browse(cr, uid, ids):
 			employee_point_obj.input_point(cr, uid,
+				event_date = datetime.now(),
 				activity_code='DIRECT_PRODUCTION',
 				roles={
 					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],

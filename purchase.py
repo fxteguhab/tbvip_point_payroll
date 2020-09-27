@@ -1,6 +1,6 @@
 from openerp.osv import osv, fields
 #from pyfcm import FCMNotification
-
+from datetime import datetime, timedelta
 # ==========================================================================================================================
 
 class purchase_order(osv.osv):
@@ -15,6 +15,7 @@ class purchase_order(osv.osv):
 		for purchase in self.browse(cr, uid, ids, context=context):
 			# who confirms
 			employee_point_obj.input_point(cr, uid,
+				event_date= datetime.now(),
 				activity_code='PURCHASE',
 				roles={
 					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
@@ -25,6 +26,7 @@ class purchase_order(osv.osv):
 				context=context)
 			# purchase creator
 			employee_point_obj.input_point(cr, uid,
+				event_date= datetime.now(),
 				activity_code='ORDER',
 				roles={
 					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, purchase.create_uid.id, context=context)],

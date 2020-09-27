@@ -12,6 +12,7 @@ class koreksi_bon(osv.osv_memory):
 		for kb in self.browse(cr, uid, ids):
 			# input points
 			employee_point_obj.input_point(cr, uid,
+				event_date = kb.create_date,
 				activity_code='KOREKSI_BON',
 				roles={
 					'ADM': [employee_obj.get_employee_id_from_user(cr, uid, uid, context=context)],
