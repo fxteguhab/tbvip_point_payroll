@@ -449,7 +449,7 @@
 			return 7
 	return 0</field>
 		</record>
-
+		<!--
 		<record id="hr_point_rule_canvas_employee_motor" model="hr.point.rule">
 			<field name="name">CANVASS_EMPLOYEE_MOTOR_SELF_XTRA</field>
 			<field name="point_employee_activity_id" eval="ref('hr_point_activity_canvass')"/>
@@ -458,7 +458,8 @@
 			<field name="factor_rule">def calculate_point(self, cr, uid, factors, context=None):
 	return 1 if factors['VEHICLE_TYPE'] == 'bike' and factors['SELF_OWN'] else 0</field>
 		</record>
-
+		-->
+		
 		<record id="hr_point_rule_canvas_employee_xtra" model="hr.point.rule">
 			<field name="name">CANVASS_EMPLOYEE_XTRA</field>
 			<field name="point_employee_activity_id" eval="ref('hr_point_activity_canvass')"/>
