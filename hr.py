@@ -62,11 +62,50 @@ class hr_attendance(osv.osv):
 					'EMP': late_employee_ids,
 				},
 				required_parameters={
+					'EARLY_MINUTES' : 0,
 					'LATE_MINUTES': late_minutes,
+					'EARLY_LEAVE_MINUTES': 0,
 					'XTRA_MINUTES': 0,
 				},
 				reference='Attendance Late - {} minute(s)'.format(late_minutes),
 				#reference='Attendance Late - {}'.format(date),
+				context=context)
+
+	def early_leave_attendance(self, cr, uid, late_employee_ids, erly_leave_minutes, date, context=None):
+		if erly_leave_minutes > 0:
+			employee_point_obj = self.pool.get('hr.point.employee.point')
+			employee_point_obj.input_point(cr, uid,
+				event_date = datetime.now(),
+				activity_code='ATTENDANCE',
+				roles={
+					'EMP': late_employee_ids,
+				},
+				required_parameters={
+					'EARLY_MINUTES' : 0,
+					'LATE_MINUTES': 0,
+					'EARLY_LEAVE_MINUTES': erly_leave_minutes,
+					'XTRA_MINUTES': 0,
+				},
+				reference='Attendance Early Leave - {} minute(s)'.format(erly_leave_minutes),
+				context=context)
+
+	def early_start(self, cr, uid, overtime_employee_ids, early_minutes, date, context=None):
+		if early_minutes > 0:
+			employee_point_obj = self.pool.get('hr.point.employee.point')
+			employee_point_obj.input_point(cr, uid,
+				event_date = datetime.now(),
+				activity_code='ATTENDANCE',
+				roles={
+					'EMP': overtime_employee_ids,
+				},
+				required_parameters={
+					'EARLY_MINUTES' : early_minutes,
+					'LATE_MINUTES': 0,
+					'EARLY_LEAVE_MINUTES': 0,
+					'XTRA_MINUTES': 0,
+				},
+				reference='Attendance Early - {} minute(s)'.format(early_minutes),
+				#reference='Attendance Overtime - {}'.format(date),
 				context=context)
 
 	def overtime_attendance(self, cr, uid, overtime_employee_ids, overtime_minutes, date, context=None):
@@ -79,7 +118,9 @@ class hr_attendance(osv.osv):
 					'EMP': overtime_employee_ids,
 				},
 				required_parameters={
+					'EARLY_MINUTES' : 0,
 					'LATE_MINUTES': 0,
+					'EARLY_LEAVE_MINUTES': 0,
 					'XTRA_MINUTES': overtime_minutes,
 				},
 				reference='Attendance Overtime - {} minute(s)'.format(overtime_minutes),

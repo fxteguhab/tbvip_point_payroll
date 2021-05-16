@@ -258,10 +258,10 @@ class hr_point_employee_point(osv.Model):
 
 			for day in attendance_by_date:
 				data = attendance_by_date[day]
-				attendance_obj.late_attendance(cr, uid, [employee.id],
-					data['late_start'] + data['early_leave'], day, context=context)
-				attendance_obj.overtime_attendance(cr, uid, [employee.id],
-					data['early_start'] + data['overtime_leave'], day, context=context)
+				attendance_obj.late_attendance(cr, uid, [employee.id],data['late_start'], day, context=context)
+				attendance_obj.early_leave_attendance(cr, uid, [employee.id],data['early_leave'], day, context=context)
+				attendance_obj.early_start(cr, uid, [employee.id],data['early_start'], day, context=context)
+				attendance_obj.overtime_attendance(cr, uid, [employee.id],data['overtime_leave'], day, context=context)
 
 		#raise osv.except_osv('test','test')
 
