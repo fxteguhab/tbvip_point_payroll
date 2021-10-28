@@ -24,7 +24,7 @@
 		'views/working_hour.xml',
 		'data/tbvip_point_payroll_data.xml',
 		'data/resource.xml',
-		'security/ir.model.access.csv',
+		#'security/ir.model.access.csv',
 	],
 	'demo': [
 	],
