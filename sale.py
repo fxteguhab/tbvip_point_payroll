@@ -5,7 +5,7 @@ from openerp.osv import osv, fields
 class sale_order(osv.osv):
 	_inherit = 'sale.order'
 	
-
+	'''
 	def action_button_confirm(self, cr, uid, ids, context=None):
 		result = super(sale_order, self).action_button_confirm(cr, uid, ids, context)
 		
@@ -41,6 +41,6 @@ class sale_order(osv.osv):
 				context=context)
 
 		return result
-	
+	'''
 
 # ===========================================================================================================================
